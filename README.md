@@ -1,131 +1,114 @@
-# 🔍 AI Hallucination Detector
+# AI Hallucination Detector
 
-A RAG-based tool that fact-checks AI-generated answers by breaking them into
-individual claims and verifying each one against a trusted knowledge base —
-instead of trusting the AI's own confidence.
+A retrieval-augmented fact-checking tool that verifies AI-generated answers against a trusted knowledge base — claim by claim — instead of taking an LLM's confidence at face value.
 
-Built for an AI/ML college project. See [`VIVA_NOTES.md`](VIVA_NOTES.md) for
-exam/demo talking points.
+## Why
+
+Language models can state incorrect information fluently and confidently. This tool breaks a given answer into individual, atomic factual claims and checks each one independently against a source of truth, so you get a precise, per-claim verdict instead of a single "trust it or don't" judgment.
 
 ## How it works
 
 ```
-        USER
-          │
-          ▼
-  AI-Generated Answer
-          │
-          ▼
- ┌───────────────────┐
- │ Claim Extraction   │   (LLM splits the answer into atomic factual claims)
- └─────────┬──────────┘
-           │
-      Individual
-        Claims
-           │
-           ▼
- ┌───────────────────┐
- │     Retriever      │   (FAISS similarity search over embedded KB chunks)
- └─────────┬──────────┘
-           │
-           ▼
-   Relevant Evidence
-           │
-           ▼
- ┌───────────────────┐
- │   LLM Evaluator    │   (judges claim vs. evidence only, no outside knowledge)
- └─────────┬──────────┘
-           │
-           ▼
-  Supported / Contradicted /
-     Insufficient Evidence
-           │
-           ▼
-      Final Report + Reliability Score
+AI-Generated Answer
+        │
+        ▼
+ Claim Extraction        →  splits the answer into atomic, checkable claims
+        │
+        ▼
+    Retriever             →  embeds claims and searches a FAISS vector index
+        │                     built from a curated or user-supplied knowledge base
+        ▼
+Relevant Evidence
+        │
+        ▼
+  LLM Evaluator           →  judges each claim strictly against retrieved evidence
+        │
+        ▼
+Supported / Contradicted / Insufficient Evidence
+        │
+        ▼
+ Reliability Score + Report
 ```
+
+Claims are extracted before verification because a single sentence can bundle multiple facts with different truth values — atomic extraction gives a precise report on exactly which part of an answer is wrong, not just a single blended verdict.
+
+The `INSUFFICIENT_EVIDENCE` verdict exists deliberately: if the knowledge base doesn't cover a claim, the system says so rather than forcing a false positive or negative.
+
+## Features
+
+- **Claim-level verification** — every factual statement in an answer is checked independently, with its own verdict, confidence, and cited evidence
+- **Pluggable knowledge base** — verify against a bundled curated reference set, your own uploaded documents (`.txt`, `.md`, `.pdf`), or both at once
+- **Provider-agnostic** — switch between Gemini and OpenAI models with a single environment variable, no code changes
+- **Reliability scoring** — an aggregate score and risk band (Low / Medium / High) computed from per-claim verdicts
+- **No external database required** — uses an in-memory FAISS index, so there's nothing to host or provision
 
 ## Tech stack
 
-| Layer       | Choice                                   |
-|-------------|-------------------------------------------|
-| Frontend    | Streamlit                                  |
-| Backend     | Python                                     |
-| Framework   | LangChain (orchestrates extraction → retrieval → evaluation) |
-| LLM         | Gemini (`gemini-1.5-flash`) or OpenAI (`gpt-4o-mini`) — switchable via `.env` |
-| Embeddings  | Gemini `text-embedding-004` or OpenAI `text-embedding-3-small` |
-| Vector DB   | FAISS (in-memory, no server needed)        |
-| Knowledge   | Curated `.txt` files in `knowledge_base/`, plus optional user-uploaded `.txt`/`.md`/`.pdf` |
+| Layer      | Choice                                                              |
+|------------|----------------------------------------------------------------------|
+| Frontend   | Streamlit                                                           |
+| Backend    | Python                                                              |
+| Orchestration | LangChain                                                        |
+| LLM        | Gemini (`gemini-1.5-flash`) or OpenAI (`gpt-4o-mini`) — switchable  |
+| Embeddings | Gemini `text-embedding-004` or OpenAI `text-embedding-3-small`     |
+| Vector store | FAISS (in-memory)                                                 |
 
 ## Project structure
 
 ```
 ai-hallucination-detector/
 ├── app.py                 # Streamlit UI — entry point
-├── llm_provider.py        # Switches between Gemini / OpenAI
-├── claim_extractor.py     # Step 1: answer -> list of atomic claims
-├── retriever.py           # Step 2: documents -> FAISS -> evidence per claim
-├── evaluator.py           # Step 3: claim + evidence -> verdict
-├── scorer.py              # Step 4: verdicts -> reliability score + risk band
-├── knowledge_base/        # Sample curated CS reference docs (Java, Python, C, OOP concepts)
+├── llm_provider.py        # Provider abstraction (Gemini / OpenAI)
+├── claim_extractor.py     # Answer → list of atomic claims
+├── retriever.py           # Documents → FAISS index → evidence retrieval
+├── evaluator.py           # Claim + evidence → verdict
+├── scorer.py              # Verdicts → reliability score + risk band
+├── knowledge_base/        # Sample curated reference documents
 ├── requirements.txt
-├── .env.example
-└── VIVA_NOTES.md          # Talking points for your demo/viva
+└── .env.example
 ```
 
 ## Setup
 
-1. **Clone and install dependencies**
-   ```bash
-   git clone <your-repo-url>
-   cd ai-hallucination-detector
-   python -m venv venv
-   source venv/bin/activate        # Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+**1. Clone and install dependencies**
+```bash
+git clone https://github.com/sushant-1212/ai-hallucination-detector.git
+cd ai-hallucination-detector
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-2. **Add your API key**
-   ```bash
-   cp .env.example .env
-   ```
-   Open `.env` and set `LLM_PROVIDER` to `gemini` or `openai`, then fill in the
-   matching API key.
-   - Get a free Gemini key at https://aistudio.google.com/apikey
-   - Get an OpenAI key at https://platform.openai.com/api-keys
+**2. Configure your API key**
+```bash
+cp .env.example .env
+```
+Set `LLM_PROVIDER` to `gemini` or `openai` in `.env`, then add the matching key:
+- Gemini: https://aistudio.google.com/apikey
+- OpenAI: https://platform.openai.com/api-keys
 
-3. **Run the app**
-   ```bash
-   streamlit run app.py
-   ```
-   This opens the app at `http://localhost:8501`.
+**3. Run**
+```bash
+streamlit run app.py
+```
+The app opens at `http://localhost:8501`.
 
-4. **Try it**
-   - Paste an AI answer, e.g.:
-     > "Java was invented by Dennis Ritchie in 1985. It uses automatic garbage collection."
-   - Click **Analyze**.
-   - You should see Claim 1 marked ❌ Contradicted (it was James Gosling, 1991/95),
-     and the garbage-collection claim marked ✅ Supported.
+## Usage
 
-## Verification modes
+Paste any AI-generated answer into the text box, choose what to verify it against in the sidebar, and click **Analyze**:
 
-In the sidebar, choose what to verify the answer against:
-- **Computer Science knowledge base** — the bundled sample docs in `knowledge_base/`.
-- **My uploaded documents** — upload your own `.txt`/`.md`/`.pdf` (e.g. lecture notes).
-- **Both** — merges the two into one search index.
+- **Curated knowledge base** — the bundled reference documents in `knowledge_base/`
+- **Uploaded documents** — your own `.txt`, `.md`, or `.pdf` files
+- **Both** — merges the two into a single search index
 
-This is what turns the project from a generic demo into a practical academic
-tool: a professor's lecture notes become the ground truth, and the tool checks
-whether a chatbot's answer actually matches what was taught.
+Each claim in the answer is reported with a verdict, a confidence score, a short explanation, and the retrieved evidence backing it.
 
-## Extending it
+## Limitations
 
-- Add more files to `knowledge_base/` to widen the default coverage.
-- Swap `gemini-1.5-flash` / `gpt-4o-mini` in `llm_provider.py` for a stronger
-  (and slower/costlier) model if you want higher accuracy for the demo.
-- Increase `top_k` (evidence chunks per claim) in the sidebar for longer, more
-  detailed source documents.
+- The reliability score is a heuristic aggregate, not a calibrated statistical probability
+- Verdicts are only as reliable as the knowledge base supplied — an unindexed but true claim will surface as "insufficient evidence," not "correct"
+- The evaluator model can itself make mistakes; this is a decision-support tool, not a guaranteed ground truth
 
-## Disclaimer
+## License
 
-The "Reliability Score" and risk labels (🟢 Low / 🟡 Medium / 🔴 High) are a
-**heuristic demo metric** built for this project, not a scientifically
-calibrated probability of correctness.
+MIT
