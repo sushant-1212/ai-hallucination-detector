@@ -38,7 +38,7 @@ The `INSUFFICIENT_EVIDENCE` verdict exists deliberately: if the knowledge base d
 
 - **Claim-level verification** — every factual statement in an answer is checked independently, with its own verdict, confidence, and cited evidence
 - **Pluggable knowledge base** — verify against a bundled curated reference set, your own uploaded documents (`.txt`, `.md`, `.pdf`), or both at once
-- **Provider-agnostic** — switch between Gemini and OpenAI models with a single environment variable, no code changes
+- **Provider-agnostic** — switch between Gemini, OpenAI, or Grok models with a single environment variable, no code changes
 - **Reliability scoring** — an aggregate score and risk band (Low / Medium / High) computed from per-claim verdicts
 - **No external database required** — uses an in-memory FAISS index, so there's nothing to host or provision
 
@@ -49,8 +49,8 @@ The `INSUFFICIENT_EVIDENCE` verdict exists deliberately: if the knowledge base d
 | Frontend   | Streamlit                                                           |
 | Backend    | Python                                                              |
 | Orchestration | LangChain                                                        |
-| LLM        | Gemini (`gemini-1.5-flash`) or OpenAI (`gpt-4o-mini`) — switchable  |
-| Embeddings | Gemini `text-embedding-004` or OpenAI `text-embedding-3-small`     |
+| LLM        | Gemini (`gemini-1.5-flash`), OpenAI (`gpt-4o-mini`), or Grok (`grok-2-latest`) — switchable |
+| Embeddings | Gemini `text-embedding-004`, OpenAI `text-embedding-3-small`, or a free local model (when using Grok) |
 | Vector store | FAISS (in-memory)                                                 |
 
 ## Project structure
@@ -83,9 +83,10 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 ```
-Set `LLM_PROVIDER` to `gemini` or `openai` in `.env`, then add the matching key:
+Set `LLM_PROVIDER` to `gemini`, `openai`, or `grok` in `.env`, then add the matching key:
 - Gemini: https://aistudio.google.com/apikey
 - OpenAI: https://platform.openai.com/api-keys
+- Grok (xAI): https://console.x.ai (embeddings run on a free local model automatically, so no second key is needed)
 
 **3. Run**
 ```bash
