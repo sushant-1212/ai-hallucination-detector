@@ -1,0 +1,13 @@
+Java was created by James Gosling and his team at Sun Microsystems. The project began in 1991 under the codename "Oak" and was publicly released in 1995 under the name Java.
+
+Java is a general-purpose, class-based, object-oriented programming language designed to have as few implementation dependencies as possible, following the principle "write once, run anywhere" (WORA).
+
+Java programs are compiled into bytecode that runs on the Java Virtual Machine (JVM), rather than being compiled directly to native machine code.
+
+Java uses automatic memory management through a garbage collector, which reclaims memory occupied by objects that are no longer reachable by the program, so developers do not need to manually free memory.
+
+Sun Microsystems was acquired by Oracle Corporation in 2010, and Oracle has maintained and developed Java since then.
+
+Common Java features include: strong static typing, automatic garbage collection, platform independence via the JVM, a large standard library, and support for object-oriented, generic, and (since Java 8) functional programming styles.
+
+Java is different from JavaScript. JavaScript was created by Brendan Eich in 1995 at Netscape and is primarily used for web scripting; the two languages share a name for marketing reasons but are otherwise unrelated in design.

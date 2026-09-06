@@ -1,0 +1,9 @@
+Garbage collection is an automatic memory management technique used by languages such as Java, Python, C#, and JavaScript, where the runtime periodically identifies and frees memory occupied by objects that are no longer referenced by the program.
+
+Languages such as C and C++ do not have built-in garbage collection by default; memory management in these languages is typically manual, using functions like malloc/free (C) or new/delete (C++), though C++ also supports smart pointers for automated cleanup.
+
+Object-oriented programming (OOP) is a programming paradigm based on the concept of "objects", which bundle data (attributes) and behavior (methods). The four commonly cited pillars of OOP are encapsulation, abstraction, inheritance, and polymorphism.
+
+A compiler translates source code written in a high-level language into machine code or an intermediate form (such as bytecode) before the program runs. An interpreter, by contrast, executes source code more directly, translating and running it line by line or statement by statement at runtime.
+
+A Virtual Machine (VM) in the context of programming languages, such as the Java Virtual Machine (JVM) or the Python Virtual Machine (PVM), is a software layer that executes compiled bytecode, allowing the same compiled program to run on different underlying hardware and operating systems.

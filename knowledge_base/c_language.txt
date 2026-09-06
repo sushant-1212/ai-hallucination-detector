@@ -1,0 +1,7 @@
+The C programming language was created by Dennis Ritchie at Bell Labs between 1969 and 1973. It was developed alongside the early versions of the Unix operating system.
+
+Dennis Ritchie also co-created the Unix operating system with Ken Thompson. C became one of the most widely used programming languages in the world and heavily influenced later languages including C++, Java, C#, and JavaScript.
+
+C is a procedural, statically-typed, compiled language that gives programmers low-level access to memory through pointers. It does not have automatic garbage collection; memory must be manually allocated and freed using functions like malloc() and free().
+
+C++ was created by Bjarne Stroustrup starting in 1979 as an extension of the C language, originally called "C with Classes," and was renamed C++ in 1983. It added object-oriented features such as classes and inheritance to C.
