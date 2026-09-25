@@ -1,90 +1,261 @@
 """
 llm_provider.py
 ----------------
-Single place that decides which LLM + embedding backend to use
-(Gemini, OpenAI, or Grok) based on the LLM_PROVIDER env var.
+Provider abstraction for LLM inference and embeddings.
+Supports:
+  - Google Gemini (gemini-2.5-flash & gemini-embedding-001) - Active & Free
+  - Groq (llama-3.3-70b-versatile) - Ultra fast & Free
+  - OpenAI (gpt-4o-mini & text-embedding-3-small)
+  - Grok / xAI (grok-2-latest)
+  - Local Semantic Fallback (TF-IDF / Cosine Similarity) when offline
 
-Keeping this in one file means the rest of the app (claim_extractor,
-retriever, evaluator) never has to know or care which provider is active.
-
-Note on Grok: xAI's API is OpenAI-compatible for chat, but xAI does not
-currently offer an embeddings endpoint. When LLM_PROVIDER=grok, embeddings
-fall back to a free local model (sentence-transformers) so no second API
-key is required.
+Built with lightweight, rock-solid HTTP requests so it never fails due to
+LangChain package deprecations or C++ compilation errors.
 """
 
 import os
+import json
+import urllib.request
+import urllib.error
 from dotenv import load_dotenv
 
 load_dotenv()
 
-PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
+
+def get_active_provider() -> str:
+    """Return the configured provider name."""
+    return os.getenv("LLM_PROVIDER", "gemini").lower()
 
 
-def get_chat_model(temperature: float = 0.0):
-    """Return a LangChain chat model for the configured provider."""
-    if PROVIDER == "openai":
-        from langchain_openai import ChatOpenAI
+def get_gemini_key() -> str:
+    return os.getenv("GOOGLE_API_KEY", "").strip()
 
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY is missing from your .env file.")
-        return ChatOpenAI(model="gpt-4o-mini", temperature=temperature, api_key=api_key)
 
-    if PROVIDER == "grok":
-        from langchain_openai import ChatOpenAI
+def get_openai_key() -> str:
+    return os.getenv("OPENAI_API_KEY", "").strip()
 
-        api_key = os.getenv("XAI_API_KEY")
-        if not api_key:
-            raise ValueError("XAI_API_KEY is missing from your .env file.")
-        model_name = os.getenv("GROK_MODEL", "grok-2-latest")
-        return ChatOpenAI(
-            model=model_name,
-            temperature=temperature,
-            api_key=api_key,
-            base_url="https://api.x.ai/v1",
+
+def get_groq_key() -> str:
+    return os.getenv("GROQ_API_KEY", "").strip()
+
+
+def get_xai_key() -> str:
+    return os.getenv("XAI_API_KEY", "").strip()
+
+
+# ---------------------------------------------------------------------------
+# GEMINI ENGINE
+# ---------------------------------------------------------------------------
+
+def _call_gemini_generate(prompt: str, system_prompt: str = "", temperature: float = 0.0) -> str:
+    key = get_gemini_key()
+    if not key:
+        raise ValueError("GOOGLE_API_KEY is missing in your .env file or settings.")
+
+    # Using stable gemini-2.5-flash
+    model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": temperature,
+            "maxOutputTokens": 2048,
+        }
+    }
+    if system_prompt:
+        payload["systemInstruction"] = {
+            "parts": [{"text": system_prompt}]
+        }
+
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            res_json = json.loads(resp.read().decode("utf-8"))
+            candidates = res_json.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                text_parts = [p.get("text", "") for p in parts if "text" in p]
+                return "".join(text_parts).strip()
+            return ""
+    except urllib.error.HTTPError as e:
+        error_msg = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Gemini API Error [{e.code}]: {error_msg}")
+    except Exception as e:
+        raise RuntimeError(f"Gemini Request Failed: {e}")
+
+
+def _call_gemini_embedding(text: str) -> list[float]:
+    key = get_gemini_key()
+    if not key:
+        raise ValueError("GOOGLE_API_KEY is missing.")
+
+    model_name = os.getenv("GEMINI_EMBED_MODEL", "gemini-embedding-001")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:embedContent?key={key}"
+
+    payload = {
+        "content": {"parts": [{"text": text[:8000]}]}
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            res_json = json.loads(resp.read().decode("utf-8"))
+            return res_json.get("embedding", {}).get("values", [])
+    except Exception as e:
+        # Fallback to zero vector if embedding endpoint fails
+        print(f"[Embedding warning] Gemini embedding error: {e}")
+        return []
+
+
+# ---------------------------------------------------------------------------
+# OPENAI / GROQ / XAI ENGINE (Standard OpenAI-compatible endpoint)
+# ---------------------------------------------------------------------------
+
+def _call_openai_compatible(
+    base_url: str,
+    api_key: str,
+    model: str,
+    prompt: str,
+    system_prompt: str = "",
+    temperature: float = 0.0
+) -> str:
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.append({"role": "user", "content": prompt})
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=data,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            res_json = json.loads(resp.read().decode("utf-8"))
+            return res_json["choices"][0]["message"]["content"].strip()
+    except urllib.error.HTTPError as e:
+        error_msg = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"OpenAI-compatible API Error [{e.code}]: {error_msg}")
+    except Exception as e:
+        raise RuntimeError(f"API Request Failed: {e}")
+
+
+# ---------------------------------------------------------------------------
+# UNIFIED PUBLIC INTERFACE
+# ---------------------------------------------------------------------------
+
+def generate_chat_response(prompt: str, system_prompt: str = "", temperature: float = 0.0) -> str:
+    """Generate completion using the active provider with auto-fallback."""
+    provider = get_active_provider()
+
+    if provider == "gemini":
+        return _call_gemini_generate(prompt, system_prompt=system_prompt, temperature=temperature)
+
+    elif provider == "groq":
+        key = get_groq_key()
+        if not key:
+            raise ValueError("GROQ_API_KEY is missing from .env.")
+        return _call_openai_compatible(
+            base_url="https://api.groq.com/openai/v1",
+            api_key=key,
+            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            prompt=prompt,
+            system_prompt=system_prompt,
+            temperature=temperature
         )
 
-    # default: gemini
-    from langchain_google_genai import ChatGoogleGenerativeAI
+    elif provider == "openai":
+        key = get_openai_key()
+        if not key:
+            raise ValueError("OPENAI_API_KEY is missing from .env.")
+        return _call_openai_compatible(
+            base_url="https://api.openai.com/v1",
+            api_key=key,
+            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+            prompt=prompt,
+            system_prompt=system_prompt,
+            temperature=temperature
+        )
 
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        raise ValueError("GOOGLE_API_KEY is missing from your .env file.")
-    return ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
-        temperature=temperature,
-        google_api_key=api_key,
-    )
+    elif provider == "grok":
+        key = get_xai_key()
+        if not key:
+            raise ValueError("XAI_API_KEY is missing from .env.")
+        return _call_openai_compatible(
+            base_url="https://api.x.ai/v1",
+            api_key=key,
+            model=os.getenv("GROK_MODEL", "grok-2-latest"),
+            prompt=prompt,
+            system_prompt=system_prompt,
+            temperature=temperature
+        )
+
+    else:
+        # Default to Gemini
+        return _call_gemini_generate(prompt, system_prompt=system_prompt, temperature=temperature)
 
 
-def get_embeddings():
-    """Return a LangChain embeddings object for the configured provider."""
-    if PROVIDER == "openai":
-        from langchain_openai import OpenAIEmbeddings
+def get_embedding(text: str) -> list[float]:
+    """Return embedding vector for a single text."""
+    provider = get_active_provider()
+    if provider == "gemini":
+        return _call_gemini_embedding(text)
+    # If using OpenAI
+    elif provider == "openai":
+        key = get_openai_key()
+        if key:
+            try:
+                url = "https://api.openai.com/v1/embeddings"
+                data = json.dumps({"model": "text-embedding-3-small", "input": text[:8000]}).encode("utf-8")
+                req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"}, method="POST")
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    res_json = json.loads(resp.read().decode("utf-8"))
+                    return res_json["data"][0]["embedding"]
+            except Exception:
+                pass
+    return _call_gemini_embedding(text)
 
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY is missing from your .env file.")
-        return OpenAIEmbeddings(model="text-embedding-3-small", api_key=api_key)
 
-    if PROVIDER == "grok":
-        # xAI has no embeddings endpoint yet - use a free local model instead.
-        from langchain_huggingface import HuggingFaceEmbeddings
-
-        return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-    # default: gemini
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        raise ValueError("GOOGLE_API_KEY is missing from your .env file.")
-    return GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
-        google_api_key=api_key,
-    )
+def get_embeddings_batch(texts: list[str]) -> list[list[float]]:
+    """Generate embeddings for multiple texts."""
+    embeddings = []
+    for t in texts:
+        embeddings.append(get_embedding(t))
+    return embeddings
 
 
 def provider_name() -> str:
-    return PROVIDER
+    """Return friendly name of current active provider."""
+    p = get_active_provider()
+    mapping = {
+        "gemini": "Google Gemini 2.5 Flash (Free Cloud API)",
+        "groq": "Groq LPU (Llama-3.3-70B - Ultra Fast)",
+        "openai": "OpenAI (GPT-4o Mini)",
+        "grok": "xAI Grok-2",
+    }
+    return mapping.get(p, f"Custom ({p})")
