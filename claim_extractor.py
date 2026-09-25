@@ -1,58 +1,90 @@
 """
 claim_extractor.py
 -------------------
-Step 1 of the pipeline: break a raw AI-generated answer into a list of
-small, independently-checkable factual claims.
-
-We ask the LLM to do this instead of naive sentence-splitting because a
-single sentence can contain multiple claims ("Java was created by Dennis
-Ritchie in 1985" = 2 claims: WHO and WHEN), and a claim can also span
-multiple sentences.
+Step 1 of the pipeline: 
+Breaks a raw AI-generated response into atomic, independently checkable factual claims,
+and maps each claim back to its original sentence span for visual inline highlighting.
 """
 
 import json
 import re
-from langchain_core.messages import SystemMessage, HumanMessage
-from llm_provider import get_chat_model
+from dataclasses import dataclass
+from llm_provider import generate_chat_response
 
-EXTRACTION_PROMPT = """You are a claim extraction engine used inside a fact-checking pipeline.
+EXTRACTION_SYSTEM_PROMPT = """You are a rigorous Natural Language Processing (NLP) claim-extraction engine.
+Given an AI-generated text, decompose it into a list of atomic, self-contained factual claims.
 
-Given an AI-generated answer, break it down into a list of atomic, independently
-verifiable factual claims. Rules:
-- Each claim must be a single, self-contained statement of fact.
-- Split compound sentences into separate claims (e.g. "who did X" and "when X happened"
-  are two separate claims even if they appear in the same sentence).
-- Ignore opinions, hedges, greetings, or filler text ("I think", "Great question!", etc.)
-- Ignore instructions or meta-commentary that isn't a factual claim.
-- If the answer contains no checkable factual claims, return an empty list.
+Rules:
+1. Each claim must be a single, testable proposition (Subject + Predicate + Object/Fact).
+2. Split compound or multi-fact sentences into separate atomic claims:
+   - "Java was created by Dennis Ritchie in 1995" ->
+     Claim 1: "Java was created by Dennis Ritchie"
+     Claim 2: "Java was released in 1995"
+3. Identify the EXACT original sentence or text snippet from the input that each claim originated from.
+4. Exclude opinions, greetings, pleasantries, hedging ("I think", "Perhaps"), or meta-instructions.
+5. If the input contains no factual claims, return an empty list.
 
-Return ONLY valid JSON in this exact format, with no markdown fences and no extra text:
-{"claims": ["claim 1 text", "claim 2 text", ...]}
+Output ONLY valid JSON in this exact structure with no markdown backticks or commentary:
+{
+  "claims": [
+    {
+      "claim": "Atomic claim statement here",
+      "original_span": "Exact sentence or clause from input"
+    }
+  ]
+}
 """
 
 
-def extract_claims(ai_answer: str) -> list[str]:
-    """Return a list of atomic factual claim strings extracted from ai_answer."""
+@dataclass
+class ExtractedClaim:
+    claim: str
+    original_span: str = ""
+
+
+def extract_claims(ai_answer: str) -> list[ExtractedClaim]:
+    """Extract atomic factual claims and map to original spans."""
     if not ai_answer or not ai_answer.strip():
         return []
 
-    model = get_chat_model(temperature=0.0)
-    messages = [
-        SystemMessage(content=EXTRACTION_PROMPT),
-        HumanMessage(content=f"AI-generated answer to analyze:\n\n{ai_answer}"),
-    ]
-    response = model.invoke(messages)
-    raw = response.content.strip()
-
-    # Models sometimes wrap JSON in ```json fences despite instructions - strip them.
-    raw = re.sub(r"^```(?:json)?|```$", "", raw.strip(), flags=re.MULTILINE).strip()
+    prompt = f"Decompose this AI-generated text into atomic claims:\n\n{ai_answer}"
 
     try:
-        parsed = json.loads(raw)
-        claims = parsed.get("claims", [])
-        return [c.strip() for c in claims if isinstance(c, str) and c.strip()]
-    except json.JSONDecodeError:
-        # Fallback: if the model didn't return clean JSON, do a naive
-        # sentence split so the app still produces a result.
-        sentences = re.split(r"(?<=[.!?])\s+", ai_answer.strip())
-        return [s.strip() for s in sentences if len(s.strip()) > 8]
+        raw_output = generate_chat_response(
+            prompt=prompt,
+            system_prompt=EXTRACTION_SYSTEM_PROMPT,
+            temperature=0.0
+        )
+        # Strip potential markdown fences
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+        data = json.loads(cleaned)
+        items = data.get("claims", [])
+        results = []
+        for it in items:
+            if isinstance(it, dict):
+                c_text = it.get("claim", "").strip()
+                span = it.get("original_span", "").strip()
+            elif isinstance(it, str):
+                c_text = it.strip()
+                span = ""
+            else:
+                continue
+
+            if c_text:
+                results.append(ExtractedClaim(claim=c_text, original_span=span or c_text))
+
+        if results:
+            return results
+
+    except Exception as e:
+        print(f"[claim_extractor] LLM extraction error ({e}), falling back to syntactic sentence splitting.")
+
+    # Fallback: Syntactic sentence tokenizer
+    sentences = re.split(r"(?<=[.!?])\s+", ai_answer.strip())
+    fallback_claims = []
+    for s in sentences:
+        s_clean = s.strip()
+        if len(s_clean) > 10:
+            fallback_claims.append(ExtractedClaim(claim=s_clean, original_span=s_clean))
+
+    return fallback_claims

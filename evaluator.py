@@ -1,91 +1,115 @@
 """
 evaluator.py
 -------------
-Step 3 of the pipeline: given a claim and the evidence retrieved for it,
-ask the LLM to classify the claim as SUPPORTED, CONTRADICTED, or
-INSUFFICIENT_EVIDENCE, with a short explanation and confidence score.
+Step 3 of the pipeline: 
+Evaluates each atomic claim strictly against the retrieved evidence using
+Natural Language Inference (NLI) logic. 
 
-INSUFFICIENT_EVIDENCE exists deliberately: if the knowledge base has
-nothing relevant, the system must say so instead of guessing FALSE.
+Produces:
+  - Verdict: SUPPORTED | CONTRADICTED | INSUFFICIENT_EVIDENCE
+  - Confidence (0 - 100%)
+  - Hallucination Type (if contradicted)
+  - Clear justification referencing cited evidence
 """
 
 import json
 import re
 from dataclasses import dataclass, field
-from langchain_core.messages import SystemMessage, HumanMessage
-from llm_provider import get_chat_model
+from retriever import RetrievedChunk
+from claim_extractor import ExtractedClaim
+from llm_provider import generate_chat_response
 
-EVAL_PROMPT = """You are a fact-verification engine. You will be given a CLAIM and a
-set of EVIDENCE passages retrieved from a trusted knowledge base.
+EVAL_SYSTEM_PROMPT = """You are an automated Natural Language Inference (NLI) and Fact-Verification engine.
+Your mission is to evaluate whether a CLAIM is supported or contradicted by the provided EVIDENCE passages.
 
-Decide the verdict for the claim using ONLY the evidence provided (do not use
-outside knowledge). Choose exactly one verdict:
-- "SUPPORTED": the evidence confirms the claim.
-- "CONTRADICTED": the evidence directly conflicts with the claim.
-- "INSUFFICIENT_EVIDENCE": the evidence does not clearly confirm or deny the claim
-  (including when no evidence was retrieved at all).
+Rules:
+1. Ground your judgment ONLY in the provided EVIDENCE passages. Do not assume facts not explicitly stated.
+2. Choose exactly ONE verdict:
+   - "SUPPORTED": The evidence explicitly or semantically confirms the claim.
+   - "CONTRADICTED": The evidence directly conflicts with or disproves the claim (AI Hallucination).
+   - "INSUFFICIENT_EVIDENCE": The evidence neither confirms nor contradicts the claim (or no relevant evidence was found).
+3. If CONTRADICTED, identify the "hallucination_type":
+   - "Entity Error" (wrong person, place, or tool)
+   - "Date / Numerical Inaccuracy" (wrong year, number, or metric)
+   - "Factual Fabrication" (completely untrue statement)
+   - "Relational Inconsistency" (misattributed action or causality)
+   If SUPPORTED or INSUFFICIENT_EVIDENCE, set hallucination_type to "None".
+4. Provide a concise, academic "explanation" (1-2 sentences) citing the exact evidence facts.
+5. Provide a "confidence" score between 0 and 100.
 
-Also give:
-- "explanation": one short sentence justifying the verdict, referencing the evidence.
-- "confidence": an integer 0-100 for how confident you are in this verdict.
-
-Return ONLY valid JSON, no markdown fences, in this exact format:
-{"verdict": "SUPPORTED" | "CONTRADICTED" | "INSUFFICIENT_EVIDENCE", "explanation": "...", "confidence": 0}
+Output strictly valid JSON with this format and NO surrounding text or markdown formatting:
+{
+  "verdict": "SUPPORTED" | "CONTRADICTED" | "INSUFFICIENT_EVIDENCE",
+  "confidence": 95,
+  "hallucination_type": "None" | "Entity Error" | "Date / Numerical Inaccuracy" | "Factual Fabrication" | "Relational Inconsistency",
+  "explanation": "Brief reasoning referencing specific evidence facts"
+}
 """
 
 
 @dataclass
 class ClaimResult:
     claim: str
-    verdict: str
-    explanation: str
+    original_span: str
+    verdict: str  # "SUPPORTED", "CONTRADICTED", "INSUFFICIENT_EVIDENCE"
     confidence: int
-    evidence: list = field(default_factory=list)
+    explanation: str
+    hallucination_type: str = "None"
+    evidence: list[RetrievedChunk] = field(default_factory=list)
+
+    @property
+    def max_similarity(self) -> float:
+        """Maximum cosine similarity among retrieved evidence chunks."""
+        if not self.evidence:
+            return 0.0
+        return max(e.score for e in self.evidence)
 
 
-def evaluate_claim(claim: str, evidence: list[str]) -> ClaimResult:
-    model = get_chat_model(temperature=0.0)
+def evaluate_claim(extracted: ExtractedClaim, evidence: list[RetrievedChunk]) -> ClaimResult:
+    """Evaluate a single claim against its retrieved evidence chunks."""
+    claim_text = extracted.claim
 
     if evidence:
-        evidence_block = "\n\n".join(f"- {e}" for e in evidence)
+        evidence_text = "\n\n".join(
+            f"[Source: {e.source} | Similarity: {e.score:.2f}]\n{e.text}"
+            for e in evidence
+        )
     else:
-        evidence_block = "(no relevant evidence was found in the knowledge base)"
+        evidence_text = "(No relevant evidence passages found in knowledge base)"
 
-    messages = [
-        SystemMessage(content=EVAL_PROMPT),
-        HumanMessage(
-            content=f"CLAIM:\n{claim}\n\nEVIDENCE:\n{evidence_block}"
-        ),
-    ]
-    response = model.invoke(messages)
-    raw = response.content.strip()
-    raw = re.sub(r"^```(?:json)?|```$", "", raw.strip(), flags=re.MULTILINE).strip()
+    user_prompt = f"CLAIM:\n{claim_text}\n\nRETRIEVED EVIDENCE:\n{evidence_text}"
 
     try:
-        parsed = json.loads(raw)
-        verdict = parsed.get("verdict", "INSUFFICIENT_EVIDENCE")
+        raw = generate_chat_response(
+            prompt=user_prompt,
+            system_prompt=EVAL_SYSTEM_PROMPT,
+            temperature=0.0
+        )
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw.strip(), flags=re.MULTILINE).strip()
+        data = json.loads(cleaned)
+
+        verdict = data.get("verdict", "INSUFFICIENT_EVIDENCE").upper()
         if verdict not in ("SUPPORTED", "CONTRADICTED", "INSUFFICIENT_EVIDENCE"):
             verdict = "INSUFFICIENT_EVIDENCE"
-        explanation = parsed.get("explanation", "")
-        confidence = int(parsed.get("confidence", 50))
-    except (json.JSONDecodeError, ValueError):
+
+        confidence = int(data.get("confidence", 50))
+        confidence = max(0, min(100, confidence))
+        hallucination_type = data.get("hallucination_type", "None")
+        explanation = data.get("explanation", "").strip()
+
+    except Exception as e:
+        print(f"[evaluator] Evaluation parsing error: {e}")
         verdict = "INSUFFICIENT_EVIDENCE"
-        explanation = "Could not parse model output; defaulting to insufficient evidence."
         confidence = 0
+        hallucination_type = "None"
+        explanation = "Automated parsing fallback: insufficient direct evidence identified."
 
     return ClaimResult(
-        claim=claim,
+        claim=claim_text,
+        original_span=extracted.original_span,
         verdict=verdict,
-        explanation=explanation,
         confidence=confidence,
-        evidence=evidence,
+        explanation=explanation,
+        hallucination_type=hallucination_type,
+        evidence=evidence
     )
-
-
-def evaluate_all(claims: list[str], vector_store, retrieve_fn, k: int = 3) -> list[ClaimResult]:
-    """Convenience helper: retrieve evidence + evaluate for a whole list of claims."""
-    results = []
-    for claim in claims:
-        evidence = retrieve_fn(vector_store, claim, k=k)
-        results.append(evaluate_claim(claim, evidence))
-    return results
