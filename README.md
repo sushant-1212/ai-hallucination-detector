@@ -17,7 +17,7 @@ An advanced, retrieval-augmented factuality verification engine that detects hal
 |:---|:---|:---|
 | **Frontend UI** | **Streamlit (v1.42.0)** | Multi-tab dashboard with custom CSS-styled inline visual highlighting |
 | **Backend Core** | **Python (3.10–3.14)** | Modular pipeline with asynchronous HTTP clients (zero external framework bloat) |
-| **LLM Reasoning & NLI** | **Google Gemini 2.5 Flash** | Atomic proposition extraction & 3-way epistemic factuality classification |
+| **LLM Reasoning & NLI** | **Google Gemini 2.5 Flash** (Default) | Multi-provider architecture supporting Gemini 2.5 Flash, Groq (Llama-3.3-70B), OpenAI (GPT-4o-mini), and xAI (Grok-2) |
 | **Dense Vector Embeddings** | **Google `gemini-embedding-001`** | High-dimensional semantic embeddings (**3,072 dimensions**) |
 | **Vector Search Engine** | **Custom In-Memory NumPy Engine** | High-speed normalized Cosine Similarity (`S = M · q`, no heavy external vector databases) |
 | **Dynamic Knowledge Retrieval** | **Wikipedia REST API** | Live factual background retrieval for open-domain fact verification |
@@ -62,6 +62,13 @@ When an assertion is contradicted, the NLI classifier categorizes the defect int
 * **Date / Numerical Inaccuracy:** Discrepancies in years, versions, or quantitative metrics.
 * **Factual Fabrication:** Statements that have no basis in factual reality.
 * **Relational Inconsistency:** Misrepresented causality or structural relationships.
+
+### 6. 🔌 Provider-Agnostic LLM Backend
+Switch seamlessly between multiple model providers via environment configuration with zero code refactoring:
+* **Google Gemini 2.5 Flash** (Default, generous free tier & high speed)
+* **Groq** (`llama-3.3-70b-versatile` running on ultra-fast LPU inference)
+* **OpenAI** (`gpt-4o-mini`)
+* **xAI** (`grok-2-latest` with local embeddings fallback)
 
 ---
 
