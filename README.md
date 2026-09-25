@@ -19,7 +19,7 @@ An advanced, retrieval-augmented factuality verification engine that detects hal
 | **Backend Core** | **Python (3.10–3.14)** | Modular pipeline with asynchronous HTTP clients (zero external framework bloat) |
 | **LLM Reasoning & NLI** | **Google Gemini 2.5 Flash** | Atomic proposition extraction & 3-way epistemic factuality classification |
 | **Dense Vector Embeddings** | **Google `gemini-embedding-001`** | High-dimensional semantic embeddings (**3,072 dimensions**) |
-| **Vector Search Engine** | **Custom In-Memory NumPy Engine** | High-speed normalized Cosine Similarity ($\mathbf{S} = \mathbf{M} \mathbf{q}$, no heavy external vector databases) |
+| **Vector Search Engine** | **Custom In-Memory NumPy Engine** | High-speed normalized Cosine Similarity (`S = M · q`, no heavy external vector databases) |
 | **Dynamic Knowledge Retrieval** | **Wikipedia REST API** | Live factual background retrieval for open-domain fact verification |
 | **Document Ingestion** | **PyPDF & Semantic Chunking** | Ingests `.pdf`, `.txt`, `.md`, and `.csv` files with sentence-boundary chunking |
 
@@ -35,9 +35,13 @@ Unlike tools that merely list errors in separate logs, the engine maps every ext
 
 ### 2. 📊 Academic ML Benchmark Suite
 To ensure quantitative scientific rigor, the system includes a dedicated evaluation benchmark with standardized ground-truth test pairs across Computer Science, programming paradigms, and algorithms. It computes live:
-* **Confusion Matrix** (True Positives, False Positives, True Negatives, False Negatives).
-* **Classification Metrics:** Accuracy, Precision, Recall, and F1-Score:
-  $$\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}, \quad \text{F1} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+* **Confusion Matrix:** Measures True Positives, False Positives, True Negatives, and False Negatives.
+* **Classification Metrics:**
+
+```math
+\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}, \quad \text{F1} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+```
+
 * **Latency Tracking:** Real-time verification latency per claim.
 
 ### 3. 🌐 Multi-Source Dense Retrieval
@@ -47,7 +51,10 @@ To ensure quantitative scientific rigor, the system includes a dedicated evaluat
 
 ### 4. 🔬 In-Memory Vectorized Cosine Similarity (NumPy)
 Avoids cumbersome external vector databases by utilizing an in-memory linear algebra engine. Chunk embeddings are normalized to the unit sphere ($L_2$ norm), transforming similarity search into an optimized BLAS matrix-vector product:
-$$\text{Sim}(\mathbf{q}, \mathbf{d}) = \frac{\mathbf{q} \cdot \mathbf{d}}{\|\mathbf{q}\|_2 \|\mathbf{d}\|_2} = \sum_{i=1}^D q_i d_i \quad \text{when } \|\mathbf{q}\| = \|\mathbf{d}\| = 1$$
+
+```math
+\text{Sim}(\mathbf{q}, \mathbf{d}) = \frac{\mathbf{q} \cdot \mathbf{d}}{\|\mathbf{q}\|_2 \|\mathbf{d}\|_2} = \sum_{i=1}^D q_i d_i \quad (\text{when } \|\mathbf{q}\| = \|\mathbf{d}\| = 1)
+```
 
 ### 5. 🏷️ Fine-Grained Hallucination Taxonomy
 When an assertion is contradicted, the NLI classifier categorizes the defect into a specific failure mode:
@@ -102,15 +109,24 @@ When an assertion is contradicted, the NLI classifier categorizes the defect int
 ## 🔬 Mathematical Formulations
 
 ### 1. Confidence-Weighted Reliability Score
-$$\text{Reliability} = \left( \frac{\sum_{i=1}^N w_i \cdot c_i}{\sum_{i=1}^N c_i} \right) \times 100$$
-Where:
-* $w_i = 1.0$ if $\text{Verdict}_i = \text{SUPPORTED}$
-* $w_i = 0.4$ if $\text{Verdict}_i = \text{INSUFFICIENT\_EVIDENCE}$
-* $w_i = 0.0$ if $\text{Verdict}_i = \text{CONTRADICTED}$
-* $c_i \in [0, 1]$ represents the NLI confidence score.
+
+```math
+\text{Reliability} = \left( \frac{\sum_{i=1}^N w_i \cdot c_i}{\sum_{i=1}^N c_i} \right) \times 100
+```
+
+Where $c_i \in [0, 1]$ represents the NLI confidence score, and weights $w_i$ are assigned as:
+
+| Verification Verdict | State | Weight ($w_i$) | Interpretation |
+| :--- | :--- | :---: | :--- |
+| **`SUPPORTED`** | Entailment | `1.0` | Maximum factual credibility |
+| **`INSUFFICIENT_EVIDENCE`** | Neutral / Epistemic | `0.4` | Unpenalized absence of ground truth |
+| **`CONTRADICTED`** | Hallucination | `0.0` | Direct factual fabrication or contradiction |
 
 ### 2. Hallucination Rate (HR)
-$$\text{HR} = \left( \frac{N_{\text{Contradicted}}}{N_{\text{Total Claims}}} \right) \times 100$$
+
+```math
+\text{Hallucination Rate} = \left( \frac{N_{\text{Contradicted}}}{N_{\text{Total Claims}}} \right) \times 100
+```
 
 ---
 
