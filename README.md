@@ -19,7 +19,7 @@ An advanced, retrieval-augmented factuality verification engine that detects hal
 | **Backend Core** | **Python (3.10–3.14)** | Modular pipeline with asynchronous HTTP clients (zero external framework bloat) |
 | **LLM Reasoning & NLI** | **Google Gemini 2.5 Flash** (Default) | Multi-provider architecture supporting Gemini 2.5 Flash, Groq (Llama-3.3-70B), OpenAI (GPT-4o-mini), and xAI (Grok-2) |
 | **Dense Vector Embeddings** | **Google `gemini-embedding-001`** | High-dimensional semantic embeddings (**3,072 dimensions**) |
-| **Vector Search Engine** | **Custom In-Memory NumPy Engine** | High-speed normalized Cosine Similarity (`S = M · q`, no heavy external vector databases) |
+| **Vector Search Engine** | **Custom In-Memory NumPy Engine** | Fast vectorized Cosine Similarity retrieval (zero external vector database dependencies) |
 | **Dynamic Knowledge Retrieval** | **Wikipedia REST API** | Live factual background retrieval for open-domain fact verification |
 | **Document Ingestion** | **PyPDF & Semantic Chunking** | Ingests `.pdf`, `.txt`, `.md`, and `.csv` files with sentence-boundary chunking |
 
@@ -92,7 +92,7 @@ Switch seamlessly between multiple model providers via environment configuration
 │  ├── Local Curated Documents (.txt, .md)               │
 │  ├── User-Uploaded Files (.pdf, .txt, .csv)            │
 │  └── Real-Time Wikipedia REST API Knowledge            │
-│  - Metric: Vectorized Cosine Similarity S = M · q      │
+│  - Metric: Dense Cosine Similarity Retrieval          │
 └───────────────────────────┬────────────────────────────┘
                             │
                             ▼
