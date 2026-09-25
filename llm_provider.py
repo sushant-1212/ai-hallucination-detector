@@ -9,8 +9,7 @@ Supports:
   - Grok / xAI (grok-2-latest)
   - Local Semantic Fallback (TF-IDF / Cosine Similarity) when offline
 
-Built with lightweight, rock-solid HTTP requests so it never fails due to
-LangChain package deprecations or C++ compilation errors.
+Built with lightweight, rock-solid HTTP requests with zero external package bloat.
 """
 
 import os
