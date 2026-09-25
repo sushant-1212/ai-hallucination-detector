@@ -180,8 +180,8 @@ DEMO_PRESETS = {
 # ---------------------------------------------------------------------------
 tab1, tab2, tab3 = st.tabs([
     "🔍 Live Hallucination Detector",
-    "📊 Academic ML Evaluation & Benchmark",
-    "🎓 Viva & Architecture Defense Guide"
+    "📊 ML Evaluation & Benchmark Suite",
+    "📐 System Architecture & Specifications"
 ])
 
 # ===========================================================================
@@ -416,11 +416,11 @@ with tab2:
 
 
 # ===========================================================================
-# TAB 3: VIVA & ARCHITECTURE DEFENSE GUIDE
+# TAB 3: SYSTEM ARCHITECTURE & SPECIFICATIONS
 # ===========================================================================
 with tab3:
-    st.header("🎓 Faculty Viva Defense & Technical Architecture")
-    st.markdown("Use this tab during your presentation to answer theoretical and algorithmic questions with confidence.")
+    st.header("📐 System Architecture & Technical Specifications")
+    st.markdown("Algorithmic breakdown and theoretical design of the retrieval-augmented factuality verification pipeline.")
 
     st.subheader("1. Pipeline Architecture")
     st.code("""
@@ -471,7 +471,7 @@ with tab3:
     $$\text{HR} = \left( \frac{N_{\text{Contradicted}}}{N_{\text{Total}}} \right) \times 100$$
     """)
 
-    st.subheader("3. Top Viva Questions & Model Answers")
+    st.subheader("3. Technical Design Decisions & System FAQ")
 
     with st.expander("Q1: Why decompose into atomic claims instead of checking the whole text?"):
         st.write(

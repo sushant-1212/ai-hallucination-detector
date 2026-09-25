@@ -6,25 +6,25 @@
 [![Vector Search](https://img.shields.io/badge/Vector%20Search-NumPy%20Cosine%20Similarity-013243?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-An advanced, retrieval-augmented factuality verification engine that detects hallucinations in AI-generated answers. Decomposes responses into atomic factual propositions, retrieves evidence from multi-source knowledge bases (local curated documents, custom uploads, and real-time live Wikipedia search), and performs Natural Language Inference (NLI) classification with interactive inline visual highlighting and an academic benchmark evaluation suite.
+An advanced, retrieval-augmented factuality verification engine that detects hallucinations in AI-generated answers. Decomposes responses into atomic factual propositions, retrieves evidence from multi-source knowledge bases (curated technical documents, custom uploads, and real-time Wikipedia search), and performs Natural Language Inference (NLI) classification with interactive inline visual highlighting and a comprehensive evaluation benchmark.
 
 ---
 
-## 📌 Project Highlights (Phase 2 Prototype)
+## 📌 Key Features
 
-1. **Atomic Proposition Decomposition:** Deconstructs compound sentences into independent, testable claims (Subject + Predicate + Object) mapped directly back to original text spans.
-2. **Interactive Inline Color Highlighter:** Visualizes hallucinations directly over the input text:
-   - 🟢 **Green:** Verified by Evidence (`SUPPORTED`)
-   - 🔴 **Red:** Contradicted Hallucination (`CONTRADICTED`)
-   - 🟡 **Yellow:** Epistemic Uncertainty (`INSUFFICIENT_EVIDENCE`)
-3. **Multi-Source Knowledge Retrieval:**
-   - **Curated Technical Knowledge Base:** Bundled references for Computer Science, Python, Java, C, and Algorithms.
-   - **Custom Uploads:** Upload your own `.pdf`, `.txt`, `.md`, or `.csv` files.
-   - **🌐 Free Real-time Live Wikipedia Search:** Verifies *any* general knowledge statement with zero extra API keys.
-4. **Vectorized NumPy Cosine Similarity Engine:** Dense vector similarity computation without heavy or fragile external database dependencies.
-5. **Academic ML Benchmark Suite:** Displays a real-time **Confusion Matrix**, **Accuracy**, **Precision**, **Recall**, and **F1-Score** on standard test pairs.
-6. **Hallucination Taxonomy:** Categorizes contradictions into *Entity Errors*, *Numerical/Date Inaccuracies*, *Factual Fabrications*, and *Relational Inconsistencies*.
-7. **Audit Report Export:** Downloadable JSON / Markdown fact-checking certificates.
+* **Atomic Proposition Decomposition:** Deconstructs compound sentences into independent, testable claims mapped directly back to original text spans.
+* **Interactive Inline Color Highlighter:** Visualizes factual credibility directly over the input text:
+  * 🟢 **Green:** Verified by Evidence (`SUPPORTED`)
+  * 🔴 **Red:** Contradicted Hallucination (`CONTRADICTED`)
+  * 🟡 **Yellow:** Epistemic Uncertainty (`INSUFFICIENT_EVIDENCE`)
+* **Multi-Source Knowledge Retrieval:**
+  * **Curated Technical Knowledge Base:** Bundled references for Computer Science, Python, Java, C, and Algorithms.
+  * **Custom Document Uploads:** Ingests user-supplied `.pdf`, `.txt`, `.md`, or `.csv` files.
+  * **Real-time Wikipedia Search:** Retrieves live reference contexts dynamically for general domain queries.
+* **Vectorized Cosine Similarity Engine:** Dense vector similarity computation using optimized matrix-vector operations ($\mathbf{S} = \mathbf{M} \mathbf{q}$).
+* **Academic ML Benchmark Suite:** Automated evaluation battery measuring **Confusion Matrix**, **Accuracy**, **Precision**, **Recall**, and **F1-Score**.
+* **Hallucination Taxonomy:** Classifies contradicted statements into *Entity Errors*, *Numerical/Date Inaccuracies*, *Factual Fabrications*, and *Relational Inconsistencies*.
+* **Audit Report Export:** Downloadable JSON verification reports for auditability.
 
 ---
 
@@ -45,9 +45,9 @@ An advanced, retrieval-augmented factuality verification engine that detects hal
                             ▼
 ┌────────────────────────────────────────────────────────┐
 │  Step 2: Multi-Source Dense Vector Retrieval           │
-│  ├── Local Curated Documents                           │
-│  ├── User-Uploaded Files (.pdf, .txt, .md)             │
-│  └── 🌐 Real-Time Live Wikipedia Knowledge             │
+│  ├── Curated Knowledge Base                            │
+│  ├── User-Uploaded Files (.pdf, .txt, .md, .csv)       │
+│  └── Real-Time Wikipedia Knowledge Search              │
 │  - Metric: Cosine Similarity S = (u · v) / (||u||||v||)│
 └───────────────────────────┬────────────────────────────┘
                             │
@@ -61,9 +61,9 @@ An advanced, retrieval-augmented factuality verification engine that detects hal
                             ▼
 ┌────────────────────────────────────────────────────────┐
 │  Step 4: Interactive Dashboard & Academic Metrics      │
-│  ├── 🎨 Inline Color-Coded Text Markup                 │
-│  ├── 📊 Academic Benchmark Tab & Confusion Matrix      │
-│  └── 📥 Downloadable Audit Reports                     │
+│  ├── Inline Color-Coded Text Markup                    │
+│  ├── Benchmark Suite & Confusion Matrix                │
+│  └── Downloadable JSON Audit Reports                   │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -88,7 +88,7 @@ $$\text{HR} = \left( \frac{N_{\text{Contradicted}}}{N_{\text{Total Claims}}} \ri
 
 ---
 
-## 🚀 Quick Setup & Installation
+## 🚀 Setup & Installation
 
 ### 1. Clone the Repository
 ```bash
@@ -101,43 +101,31 @@ cd ai-hallucination-detector
 pip install -r requirements.txt
 ```
 
-### 3. Configure API Key
-Create a `.env` file (or copy `.env.example`):
+### 3. Configure Environment Variables
+Create a `.env` file based on `.env.example`:
 ```bash
 cp .env.example .env
 ```
-Add your free Google Gemini API key:
+Set your API key in `.env`:
 ```env
 LLM_PROVIDER=gemini
-GOOGLE_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_api_key_here
 ```
-> *Get a 100% free Gemini API key in 30 seconds at [Google AI Studio](https://aistudio.google.com/apikey).*
 
 ### 4. Run the Application
 ```bash
 streamlit run app.py
 ```
-Open your browser at `http://localhost:8501`.
+Access the web dashboard at `http://localhost:8501`.
 
 ---
 
-## 🧪 Verification & Testing
+## 🧪 Testing
 
 Run the automated integration test suite:
 ```bash
 python test_pipeline.py
 ```
-
----
-
-## 🎓 Faculty Viva & Evaluation Q&A
-
-* **Q: Why decompose into atomic claims instead of verifying the entire text?**
-  * *A:* A single sentence frequently couples true statements with false ones (e.g., *"Java was created by Dennis Ritchie in 1995"*). Evaluating the whole sentence yields ambiguous verdicts, while atomic decomposition isolates the specific entity error (*Dennis Ritchie*) while confirming the release year (*1995*).
-* **Q: Why is "INSUFFICIENT EVIDENCE" distinct from "CONTRADICTED"?**
-  * *A:* Absence of evidence is not evidence of falsity. If an unindexed but true fact is checked, categorizing it as contradicted would inflate false positives. Modeling epistemic uncertainty preserves detector precision.
-* **Q: How does the vector index perform similarity matching?**
-  * *A:* We utilize normalized dense embeddings in a NumPy-vectorized matrix. Cosine similarity reduces to an optimized single BLAS matrix-vector dot product $\mathbf{S} = \mathbf{M} \mathbf{q}$, eliminating heavy database infrastructure.
 
 ---
 
