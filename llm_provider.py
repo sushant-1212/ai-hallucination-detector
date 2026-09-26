@@ -51,9 +51,12 @@ def _call_gemini_generate(prompt: str, system_prompt: str = "", temperature: flo
     if not key:
         raise ValueError("GOOGLE_API_KEY is missing in your .env file or settings.")
 
-    # Using stable gemini-2.5-flash
-    model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+    # Cascading fallback models to maximize free quota across endpoints
+    configured_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+    fallback_models = ["gemini-2.5-flash-lite", "gemini-flash-latest", "gemini-2.5-flash"]
+    if configured_model in fallback_models:
+        fallback_models.remove(configured_model)
+    models_to_try = [configured_model] + fallback_models
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -66,37 +69,46 @@ def _call_gemini_generate(prompt: str, system_prompt: str = "", temperature: flo
         payload["systemInstruction"] = {
             "parts": [{"text": system_prompt}]
         }
-
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json"},
-        method="POST"
-    )
 
     import time
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                res_json = json.loads(resp.read().decode("utf-8"))
-                candidates = res_json.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    text_parts = [p.get("text", "") for p in parts if "text" in p]
-                    return "".join(text_parts).strip()
-                return ""
-        except urllib.error.HTTPError as e:
-            if e.code in (429, 503) and attempt < 3:
-                time.sleep(3 * (attempt + 1))
-                continue
-            error_msg = e.read().decode("utf-8", errors="ignore")
-            raise RuntimeError(f"Gemini API Error [{e.code}]: {error_msg}")
-        except Exception as e:
-            if attempt < 3:
-                time.sleep(2)
-                continue
-            raise RuntimeError(f"Gemini Request Failed: {e}")
+    last_err = None
+    for model_name in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        for attempt in range(3):
+            try:
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    res_json = json.loads(resp.read().decode("utf-8"))
+                    candidates = res_json.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        text_parts = [p.get("text", "") for p in parts if "text" in p]
+                        return "".join(text_parts).strip()
+                    return ""
+            except urllib.error.HTTPError as e:
+                # If quota exhausted on this model, break to try the next model
+                if e.code == 429:
+                    last_err = e
+                    break
+                elif e.code == 503 and attempt < 2:
+                    time.sleep(2)
+                    continue
+                last_err = e
+            except Exception as e:
+                last_err = e
+                if attempt < 2:
+                    time.sleep(1)
+                    continue
+
+    if last_err:
+        raise RuntimeError(f"Gemini API Error: {last_err}")
+    return ""
 
 
 def _call_gemini_embedding(text: str) -> list[float]:
