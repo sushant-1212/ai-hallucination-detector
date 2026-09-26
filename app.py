@@ -363,17 +363,28 @@ with tab2:
         "a **Confusion Matrix, Accuracy, Precision, Recall, and F1-Score**."
     )
 
-    col_bench_1, col_bench_2 = st.columns([1, 3])
+    col_bench_1, col_bench_2 = st.columns([1, 2])
     with col_bench_1:
         run_bench = st.button("⚡ Run Benchmark Battery", type="primary")
+    with col_bench_2:
+        bench_mode = st.radio(
+            "Evaluation Scope:",
+            ["Comprehensive Benchmark (30 samples)", "Fast Smoke Test (10 samples)"],
+            horizontal=True
+        )
 
     if run_bench:
         curated_kb = load_curated_kb()
         if not curated_kb:
             curated_kb = VectorIndex()
 
+        limit = 10 if "10" in bench_mode else 30
         bench_progress = st.progress(0.0, text="Initializing benchmark suite...")
-        metrics = evaluate_benchmark(curated_kb, progress_callback=lambda p, t: bench_progress.progress(p, text=t))
+        metrics = evaluate_benchmark(
+            curated_kb,
+            sample_limit=limit,
+            progress_callback=lambda p, t: bench_progress.progress(p, text=t)
+        )
         bench_progress.empty()
 
         st.success(f"Benchmark completed across {metrics.total_samples} ground-truth test cases!")
