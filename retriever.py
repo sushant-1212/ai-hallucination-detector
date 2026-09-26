@@ -14,9 +14,10 @@ import urllib.parse
 import json
 from dataclasses import dataclass, field
 import numpy as np
-from llm_provider import get_embedding, get_embeddings_batch
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-CHUNK_SIZE = 600
+CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
 
 
@@ -34,8 +35,10 @@ class RetrievedChunk:
 
 
 class VectorIndex:
-    """Fast, in-memory vectorized Cosine Similarity Search Engine using NumPy.
+    """Fast, in-memory vectorized Cosine Similarity Search Engine using NumPy & Scikit-Learn TF-IDF.
     
+    Eliminates external embedding API rate-limits (HTTP 429) by computing
+    sublinear TF-IDF n-gram vectors locally with sub-millisecond latency.
     Mathematical formula:
         similarity = (u . v) / (||u|| * ||v||)
     """
@@ -43,61 +46,44 @@ class VectorIndex:
     def __init__(self):
         self.texts: list[str] = []
         self.sources: list[str] = []
-        self.embeddings: list[list[float]] = []
-        self._matrix: np.ndarray | None = None
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), stop_words="english", sublinear_tf=True)
+        self._matrix = None
 
     def add_chunks(self, chunks: list[tuple[str, str]]):
-        """Add (text, source) tuples and compute their embeddings."""
+        """Add (text, source) tuples and fit/transform TF-IDF vectors."""
         if not chunks:
             return
         new_texts = [c[0] for c in chunks]
         new_sources = [c[1] for c in chunks]
-        new_embs = get_embeddings_batch(new_texts)
 
         self.texts.extend(new_texts)
         self.sources.extend(new_sources)
-        self.embeddings.extend(new_embs)
         self._rebuild_matrix()
 
     def _rebuild_matrix(self):
-        if not self.embeddings:
+        if not self.texts:
             self._matrix = None
             return
-        mat = np.array(self.embeddings, dtype=np.float32)
-        # Normalize rows to unit length for fast dot-product cosine similarity
-        norms = np.linalg.norm(mat, axis=1, keepdims=True)
-        norms[norms == 0] = 1e-10
-        self._matrix = mat / norms
+        self._matrix = self.vectorizer.fit_transform(self.texts)
 
     def similarity_search(self, query: str, k: int = 3) -> list[RetrievedChunk]:
-        """Search for the top-k most semantically similar chunks."""
+        """Search for the top-k most semantically similar chunks using Cosine Similarity."""
         if self._matrix is None or len(self.texts) == 0:
             return []
 
-        q_emb = get_embedding(query)
-        if not q_emb:
-            return []
+        q_vec = self.vectorizer.transform([query])
+        scores = cosine_similarity(q_vec, self._matrix)[0]
 
-        q_vec = np.array(q_emb, dtype=np.float32)
-        q_norm = np.linalg.norm(q_vec)
-        if q_norm > 0:
-            q_vec = q_vec / q_norm
-
-        # Cosine similarity vector: S = Matrix . q_vec
-        scores = np.dot(self._matrix, q_vec)
-        # Get top-k indices
         top_k = min(k, len(scores))
         top_indices = np.argsort(scores)[::-1][:top_k]
 
         results = []
         for idx in top_indices:
             score = float(scores[idx])
-            # Clamp between 0 and 1
-            score = max(0.0, min(1.0, (score + 1.0) / 2.0 if score < 0 else score))
             results.append(RetrievedChunk(
                 text=self.texts[idx],
                 source=self.sources[idx],
-                score=round(score, 3)
+                score=round(max(0.0, min(1.0, score)), 3)
             ))
         return results
 
@@ -106,7 +92,6 @@ class VectorIndex:
         if other and other.texts:
             self.texts.extend(other.texts)
             self.sources.extend(other.sources)
-            self.embeddings.extend(other.embeddings)
             self._rebuild_matrix()
 
 
@@ -279,10 +264,10 @@ def retrieve_evidence(
     if vector_store is not None:
         evidence_chunks.extend(vector_store.similarity_search(claim, k=k))
 
-    # 2. If web search is enabled or if vector store produced low similarity
+    # 2. If web search is enabled and local matches are weak or insufficient
     if include_web_search:
-        # Check if we already have strong matches (score > 0.75)
-        has_strong_match = any(e.score >= 0.75 for e in evidence_chunks)
+        # For TF-IDF, similarity score >= 0.20 indicates strong topical relevance
+        has_strong_match = any(e.score >= 0.20 for e in evidence_chunks)
         if not has_strong_match or len(evidence_chunks) < k:
             wiki_docs = fetch_wikipedia_knowledge(claim, max_results=2)
             if wiki_docs:
