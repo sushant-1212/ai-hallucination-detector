@@ -288,6 +288,7 @@ def evaluate_benchmark(vector_store: VectorIndex, sample_limit: int | None = Non
 
         if progress_callback:
             progress_callback((i + 1) / total, f"Evaluating benchmark sample {i + 1}/{total} ({item['category']})...")
+        time.sleep(1.0)
 
     # Statistical Metrics computation
     accuracy = round(((tp + tn) / total) * 100, 1) if total > 0 else 0.0

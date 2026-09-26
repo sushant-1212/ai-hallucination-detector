@@ -75,20 +75,28 @@ def _call_gemini_generate(prompt: str, system_prompt: str = "", temperature: flo
         method="POST"
     )
 
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            res_json = json.loads(resp.read().decode("utf-8"))
-            candidates = res_json.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                text_parts = [p.get("text", "") for p in parts if "text" in p]
-                return "".join(text_parts).strip()
-            return ""
-    except urllib.error.HTTPError as e:
-        error_msg = e.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"Gemini API Error [{e.code}]: {error_msg}")
-    except Exception as e:
-        raise RuntimeError(f"Gemini Request Failed: {e}")
+    import time
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res_json = json.loads(resp.read().decode("utf-8"))
+                candidates = res_json.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    text_parts = [p.get("text", "") for p in parts if "text" in p]
+                    return "".join(text_parts).strip()
+                return ""
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 503) and attempt < 3:
+                time.sleep(3 * (attempt + 1))
+                continue
+            error_msg = e.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(f"Gemini API Error [{e.code}]: {error_msg}")
+        except Exception as e:
+            if attempt < 3:
+                time.sleep(2)
+                continue
+            raise RuntimeError(f"Gemini Request Failed: {e}")
 
 
 def _call_gemini_embedding(text: str) -> list[float]:
@@ -110,14 +118,25 @@ def _call_gemini_embedding(text: str) -> list[float]:
         method="POST"
     )
 
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            res_json = json.loads(resp.read().decode("utf-8"))
-            return res_json.get("embedding", {}).get("values", [])
-    except Exception as e:
-        # Fallback to zero vector if embedding endpoint fails
-        print(f"[Embedding warning] Gemini embedding error: {e}")
-        return []
+    import time
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                res_json = json.loads(resp.read().decode("utf-8"))
+                return res_json.get("embedding", {}).get("values", [])
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 503) and attempt < 3:
+                time.sleep(3 * (attempt + 1))
+                continue
+            print(f"[Embedding warning] Gemini embedding error [{e.code}]: {e}")
+            return []
+        except Exception as e:
+            if attempt < 3:
+                time.sleep(2)
+                continue
+            print(f"[Embedding warning] Gemini embedding error: {e}")
+            return []
+    return []
 
 
 # ---------------------------------------------------------------------------
