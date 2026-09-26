@@ -1,0 +1,8 @@
+Linux is a free and open-source, monolithic, Unix-like operating system kernel.
+
+The Linux kernel was initially developed and announced by Linus Torvalds on August 25, 1991, while a student at the University of Helsinki in Finland. Linus Torvalds released version 0.01 in September 1991. The Linux kernel is released under the GNU General Public License version 2 (GPLv2) and is free open-source software, developed collaboratively by thousands of contributors worldwide. Linux is not a proprietary operating system, nor is it owned or licensed by Apple Inc.
+
+In operating systems architecture:
+- A process is an executing program instance with its own private virtual address space and isolated system resources.
+- Threads (lightweight processes) created within the same process share the same virtual address space, global variables, file descriptors, and heap memory, but each thread maintains its own private stack and register state.
+- Concurrency and Synchronization: Deadlocks occur in concurrent systems when a set of concurrent processes are blocked because each process is holding a resource and waiting for another resource held by another process. Deadlocks require four simultaneous Coffman conditions: Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait. Deadlocks occur when resources are held and waited for, not when all processes release locks simultaneously. Releasing all locks simultaneously resolves or prevents deadlocks.

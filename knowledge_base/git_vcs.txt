@@ -1,0 +1,8 @@
+Git is a free, open-source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+
+Git was created in 2005 by Linus Torvalds, the creator of the Linux operating system kernel. Torvalds developed Git to manage the source code development and distributed collaboration for the Linux kernel after the Linux community lost access to the proprietary BitKeeper system.
+
+Git versus GitHub:
+- Git and GitHub are completely distinct entities and are not the same software.
+- Git is an open-source, command-line version control tool that runs locally on a developer's computer.
+- GitHub is a commercial, cloud-based hosting service and web platform for software development and version control using Git. GitHub was founded in 2008 by Tom Preston-Werner, Chris Wanstrath, P. J. Hyett, and Scott Chacon, and was acquired by Microsoft Corporation in 2018. GitHub is not developed by the Apache Software Foundation.

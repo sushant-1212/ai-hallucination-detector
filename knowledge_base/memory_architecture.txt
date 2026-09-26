@@ -1,0 +1,17 @@
+Memory architecture and execution models differ fundamentally across programming language ecosystems.
+
+Memory Management in Systems Languages (C and C++):
+- The C programming language provides direct, low-level access to system memory through raw pointers.
+- Memory in C is divided into distinct regions: code (text), data, BSS, stack, and heap.
+- Stack Memory: Automatically managed by the compiler. Local variables and function call frames are stored on the call stack and popped when a function exits. Dynamic memory is not allocated on the stack via malloc.
+- Heap Memory: Used for manual dynamic memory allocation. Developers explicitly allocate heap memory at runtime using functions like malloc, calloc, or realloc, and must explicitly release it using free. C does not have automatic garbage collection or compile-time memory leak prevention; failing to free allocated memory causes memory leaks.
+
+Virtual Machines and Managed Runtimes:
+- The Java programming language utilizes automatic memory management (garbage collection) handled by the Java Virtual Machine (JVM).
+- Java source code (.java) is compiled by javac into platform-independent bytecode (.class files).
+- The JVM executes bytecode, using a bytecode interpreter and Just-In-Time (JIT) compilation to translate hot bytecode sequences into native machine instructions at runtime. Java does not compile directly to raw standalone x86 machine binaries.
+
+Python Name and Design History:
+- Python was created by Dutch programmer Guido van Rossum and released in 1991.
+- Guido van Rossum named the Python language after the British comedy television series "Monty Python's Flying Circus", of which he was a fan. Python was not named after the snake family Colubridae or any biological serpent.
+- Python uses significant indentation (whitespace) to delineate code blocks, functions, and control flow structures instead of curly braces.

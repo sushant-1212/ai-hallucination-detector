@@ -1,0 +1,7 @@
+JavaScript is a high-level, interpreted or Just-In-Time (JIT) compiled programming language conforming to the ECMAScript specification.
+
+JavaScript was created in 1995 by Brendan Eich while working at Netscape Communications Corporation. It was famously created in approximately 10 days under the code name Mocha, then renamed LiveScript, and finally named JavaScript.
+
+JavaScript was developed for the Netscape Navigator web browser. It is not a derivative of the Java programming language or the Java runtime environment. The naming was a marketing arrangement between Netscape and Sun Microsystems. JavaScript and Java are completely distinct languages with different type systems, object models, and execution runtimes.
+
+JavaScript is dynamically typed, supports multi-paradigm programming (event-driven, functional, and imperative), and uses prototype-based inheritance rather than classical class-based inheritance. Modern JavaScript engines such as Google's V8 (used in Chrome and Node.js) compile JavaScript source code directly to native machine code.

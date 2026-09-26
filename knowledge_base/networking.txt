@@ -1,0 +1,20 @@
+Computer networking protocols operate across standardized layered models (OSI and TCP/IP).
+
+Transmission Control Protocol (TCP):
+- TCP is a core protocol of the Internet Protocol suite operating at the Transport layer.
+- TCP is a connection-oriented, reliable transport protocol. It provides full-duplex, ordered, and error-checked delivery of a stream of octets between hosts.
+- Establishing a TCP connection requires a formal three-way handshake (SYN, SYN-ACK, ACK) before data transmission can commence.
+
+User Datagram Protocol (UDP):
+- UDP is a connectionless, lightweight transport protocol.
+- UDP sends independent packets called datagrams without establishing a prior connection or session.
+- UDP does not use or establish a three-way handshake. It provides no guarantees of delivery, ordering, or duplicate protection, making it ideal for low-latency real-time applications such as video streaming and online gaming.
+
+Domain Name System (DNS):
+- DNS is an Internet directory service that translates human-readable domain names (such as www.example.com) into numerical IP addresses (such as 192.0.2.1 or 2001:db8::1) that computers use to route data packets across networks.
+
+Hypertext Transfer Protocol (HTTP) Status Codes:
+- HTTP status codes are standard three-digit integers returned by web servers indicating the outcome of a client's request.
+- 200 OK: Indicates that the request succeeded and the requested information is in the response.
+- 404 Not Found: A client-error response code indicating that the server cannot find the requested resource, URL, or document. It does not indicate success.
+- 500 Internal Server Error: Indicates an unhandled server-side failure.
