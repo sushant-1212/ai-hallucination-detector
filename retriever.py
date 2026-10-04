@@ -190,7 +190,7 @@ def build_vector_store(documents: list[Document]) -> VectorIndex | None:
 # 🌐 LIVE WIKIPEDIA / OPEN-WEB KNOWLEDGE RETRIEVER (100% Free, No API Key)
 # ---------------------------------------------------------------------------
 
-def fetch_wikipedia_knowledge(query: str, max_results: int = 2) -> list[Document]:
+def fetch_wikipedia_knowledge(query: str, max_results: int = 3) -> list[Document]:
     """Query Wikipedia REST API to fetch relevant factual articles.
     
     This ensures that when professors test ANY general fact (history, science,
@@ -200,6 +200,10 @@ def fetch_wikipedia_knowledge(query: str, max_results: int = 2) -> list[Document
     clean_query = re.sub(r"[^\w\s]", " ", query).strip()
     if not clean_query:
         return []
+
+    wiki_headers = {
+        "User-Agent": "AIHallucinationDetector/2.0 (student-academic-eval; contact: sushant@project.edu)"
+    }
 
     try:
         # Step 1: Search Wikipedia for relevant page titles
@@ -213,7 +217,7 @@ def fetch_wikipedia_knowledge(query: str, max_results: int = 2) -> list[Document
                 "format": "json"
             })
         )
-        req = urllib.request.Request(search_url, headers={"User-Agent": "AIHallucinationDetector/2.0"})
+        req = urllib.request.Request(search_url, headers=wiki_headers)
         with urllib.request.urlopen(req, timeout=6) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             search_items = data.get("query", {}).get("search", [])
@@ -235,7 +239,7 @@ def fetch_wikipedia_knowledge(query: str, max_results: int = 2) -> list[Document
                     "format": "json"
                 })
             )
-            ex_req = urllib.request.Request(extract_url, headers={"User-Agent": "AIHallucinationDetector/2.0"})
+            ex_req = urllib.request.Request(extract_url, headers=wiki_headers)
             with urllib.request.urlopen(ex_req, timeout=6) as ex_resp:
                 ex_data = json.loads(ex_resp.read().decode("utf-8"))
                 pages = ex_data.get("query", {}).get("pages", {})

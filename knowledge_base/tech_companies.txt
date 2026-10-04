@@ -1,0 +1,34 @@
+Major Technology Companies, Historical Foundations, and Founders.
+
+Google (Alphabet Inc.):
+- Google was founded on September 4, 1998, by Larry Page and Sergey Brin while they were Ph.D. students at Stanford University in California.
+- Google began as a research project originally called "BackRub", developing the PageRank algorithm to rank search results based on link structure.
+- Eric Schmidt served as Google's CEO from 2001 to 2011, alongside co-founders Larry Page and Sergey Brin.
+- Sundar Pichai became CEO of Google in 2015 and CEO of its parent holding company, Alphabet Inc., in 2019.
+- Key Google products include Google Search, Android mobile operating system (acquired in 2005), YouTube (acquired in 2006 for $1.65 billion), Google Chrome web browser (released in 2008), Google Cloud Platform (GCP), and Gmail.
+
+Apple Inc.:
+- Apple was founded on April 1, 1976, by Steve Jobs, Steve Wozniak, and Ronald Wayne in Los Altos, California.
+- Steve Wozniak hand-built the Apple I computer, and Steve Jobs managed business operations and design vision.
+- Apple went public in December 1980. Key milestones include the Macintosh (1984, first mass-market computer with a graphical user interface), iMac (1998), iPod (2001), iPhone (released in 2007), iPad (2010), and Apple Silicon M-series chips (introduced in 2020).
+- Tim Cook succeeded Steve Jobs as Apple's CEO in August 2011.
+
+Microsoft Corporation:
+- Microsoft was founded on April 4, 1975, by childhood friends Bill Gates and Paul Allen in Albuquerque, New Mexico.
+- Microsoft rose to dominate the personal computer market with MS-DOS in the early 1980s, followed by the Microsoft Windows graphical operating system released in November 1985.
+- Steve Ballmer served as Microsoft CEO from 2000 to 2014, succeeded by Satya Nadella in February 2014.
+- Microsoft develops the Windows operating system, Microsoft Office productivity suite (Word, Excel, PowerPoint), Azure cloud computing platform, Xbox gaming consoles, GitHub (acquired in 2018), and LinkedIn (acquired in 2016).
+
+Amazon:
+- Amazon was founded on July 5, 1994, by Jeff Bezos in Bellevue, Washington, originally as an online bookstore.
+- Amazon pioneered e-commerce, cloud computing with Amazon Web Services (AWS launched in 2006 under Andy Jassy), Kindle e-readers, and prime subscription services.
+- Andy Jassy succeeded Jeff Bezos as Amazon's CEO in July 2021.
+
+Meta Platforms (Facebook):
+- Facebook was founded on February 4, 2004, by Mark Zuckerberg alongside Harvard College roommates Eduardo Saverin, Andrew McCollum, Dustin Moskovitz, and Chris Hughes.
+- Rebranded to Meta Platforms in October 2021. Owns Facebook, Instagram (acquired in 2012 for $1 billion), WhatsApp (acquired in 2014 for $19 billion), and the PyTorch open-source machine learning framework.
+
+OpenAI:
+- OpenAI was founded in December 2015 in San Francisco as a non-profit artificial intelligence research lab by Sam Altman, Elon Musk, Greg Brockman, Ilya Sutskever, Wojciech Zaremba, and John Schulman.
+- Elon Musk resigned from OpenAI's board in 2018. OpenAI transitioned to a "capped-profit" model in 2019 and partnered closely with Microsoft.
+- OpenAI developed the Generative Pre-trained Transformer (GPT) series, including GPT-2, GPT-3, ChatGPT (released in November 2022), GPT-4, and the DALL-E image generation models.

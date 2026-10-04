@@ -180,14 +180,16 @@ def _call_openai_compatible(
         "messages": messages,
         "temperature": temperature,
     }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=data,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        },
+        headers=headers,
         method="POST"
     )
 
@@ -220,7 +222,7 @@ def generate_chat_response(prompt: str, system_prompt: str = "", temperature: fl
         return _call_openai_compatible(
             base_url="https://api.groq.com/openai/v1",
             api_key=key,
-            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
             prompt=prompt,
             system_prompt=system_prompt,
             temperature=temperature
