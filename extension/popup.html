@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeritasAI - Hallucination Detector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="logo-box">
+        <span class="logo-icon">🛡️</span>
+        <div>
+          <h1 class="logo-title">VeritasAI</h1>
+          <span class="logo-subtitle">Hallucination Detector</span>
+        </div>
+      </div>
+      <div id="active-llm-badge" class="active-badge badge-neutral">
+        <span class="pulse-dot"></span>
+        <span id="active-llm-name">Detecting...</span>
+      </div>
+    </header>
+
+    <!-- Platform Selector Pills -->
+    <div class="platform-tabs">
+      <button class="tab-btn" data-platform="chatgpt" id="tab-chatgpt">
+        <span class="tab-icon">🟢</span> ChatGPT
+      </button>
+      <button class="tab-btn" data-platform="claude" id="tab-claude">
+        <span class="tab-icon">🟠</span> Claude
+      </button>
+      <button class="tab-btn" data-platform="gemini" id="tab-gemini">
+        <span class="tab-icon">🔵</span> Gemini
+      </button>
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="action-bar">
+      <button id="btn-grab-latest" class="secondary-btn" title="Extract the latest AI response bubble from the page">
+        ✨ Grab Latest
+      </button>
+      <button id="btn-grab-selection" class="secondary-btn" title="Grab currently selected text">
+        📋 Grab Selection
+      </button>
+      <button id="btn-clear" class="icon-btn" title="Clear text">
+        🗑️
+      </button>
+    </div>
+
+    <!-- Text Input -->
+    <div class="input-section">
+      <textarea id="input-text" placeholder="Click 'Grab Latest' or paste an AI answer here to verify..." rows="5"></textarea>
+      <div class="char-count" id="char-count">0 chars</div>
+    </div>
+
+    <!-- Settings Bar -->
+    <div class="settings-bar">
+      <label class="checkbox-label">
+        <input type="checkbox" id="check-wiki" checked>
+        <span>Live Wikipedia Fallback</span>
+      </label>
+      <select id="select-endpoint" class="endpoint-select" title="Backend Server">
+        <option value="http://127.0.0.1:8000">Local (Port 8000)</option>
+        <option value="https://ai-hallucination-detector-h49o.onrender.com">Live Render Cloud</option>
+      </select>
+    </div>
+
+    <!-- Main Verify Button -->
+    <button id="btn-verify" class="primary-btn">
+      <span id="btn-verify-text">🛡️ Check for Hallucinations</span>
+      <div id="btn-spinner" class="spinner hidden"></div>
+    </button>
+
+    <!-- Error Banner -->
+    <div id="error-banner" class="error-banner hidden"></div>
+
+    <!-- Results Section -->
+    <div id="results-container" class="results-container hidden">
+      <!-- Score Overview Card -->
+      <div class="score-card">
+        <div class="score-main">
+          <div class="score-dial">
+            <span id="res-reliability-num">0%</span>
+            <span class="dial-label">Reliability</span>
+          </div>
+          <div class="score-meta">
+            <div id="res-risk-badge" class="risk-badge">
+              <span id="res-risk-emoji">🟢</span>
+              <span id="res-risk-label">Verified</span>
+            </div>
+            <div class="score-subtext">
+              Hallucination Risk: <strong id="res-hallucination-num">0%</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claim Stats Bar -->
+        <div class="stats-row">
+          <div class="stat-pill stat-supported">
+            <span id="stat-supported-num">0</span> Supported
+          </div>
+          <div class="stat-pill stat-contradicted">
+            <span id="stat-contradicted-num">0</span> Hallucinated
+          </div>
+          <div class="stat-pill stat-insufficient">
+            <span id="stat-insufficient-num">0</span> Insufficient
+          </div>
+        </div>
+      </div>
+
+      <!-- Claims List Header -->
+      <div class="claims-header">
+        <h3>Extracted Claims & Evidence</h3>
+        <span id="claims-total-count" class="badge-count">0 claims</span>
+      </div>
+
+      <!-- Claims Scroll Container -->
+      <div id="claims-list" class="claims-list"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

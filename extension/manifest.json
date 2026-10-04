@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "VeritasAI - Hallucination Detector for ChatGPT, Claude & Gemini",
+  "version": "1.0.0",
+  "description": "Real-time fact checking, claim decomposition, and hallucination detection for ChatGPT, Claude, and Gemini.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "VeritasAI Hallucination Detector",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*",
+    "https://ai-hallucination-detector-h49o.onrender.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
