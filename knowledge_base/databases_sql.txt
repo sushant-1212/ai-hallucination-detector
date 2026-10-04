@@ -29,5 +29,10 @@ Transactions and Concurrency Control:
   1. Read Uncommitted: Permits Dirty Reads (reading uncommitted writes from other transactions).
   2. Read Committed: Prevents Dirty Reads, but permits Non-Repeatable Reads (subsequent reads see updated values).
   3. Repeatable Read: Prevents Dirty and Non-Repeatable Reads, but may permit Phantom Reads (concurrent inserts appearing in subsequent range queries). Default in MySQL InnoDB.
-  4. Serializable: Strictest isolation level; transactions execute with identical results to strict serial execution, eliminating all concurrency anomalies through two-phase locking (2PL) or Serializable Snapshot Isolation (SSI).
 - Multi-Version Concurrency Control (MVCC): Modern engines (PostgreSQL, MySQL InnoDB) use MVCC to allow readers to never block writers, and writers to never block readers, by maintaining multiple historical versions of data rows.
+
+Database Sharding, Partitioning, and Scaling:
+- Sharding (Horizontal Partitioning): Sharding is a database scaling technique where a large dataset is split into smaller, independent pieces called shards, and spread across multiple servers or database nodes.
+- Each shard holds only a portion or subset of the total data (determined by a shard key), and together all shards make up the whole, complete dataset.
+- Sharding enables horizontal scaling (scale-out) by distributing storage capacity, CPU load, and read/write transaction throughput across multiple machines.
+- Database Replication: Maintaining identical copies of data across multiple database servers to achieve high availability, disaster recovery, and read scaling (Primary-Replica or Multi-Primary models).
