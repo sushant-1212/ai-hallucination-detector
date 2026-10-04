@@ -29,6 +29,7 @@
     "https://gemini.google.com/*",
     "http://127.0.0.1:8000/*",
     "http://localhost:8000/*",
+    "https://veritas-api-wnqe.onrender.com/*",
     "https://ai-hallucination-detector-h49o.onrender.com/*"
   ],
   "content_scripts": [
