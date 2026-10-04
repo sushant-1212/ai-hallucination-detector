@@ -1,41 +1,125 @@
-Artificial Intelligence, Machine Learning, Deep Learning, and NLP Fundamentals.
+Artificial Intelligence, Machine Learning, Deep Learning, and Modern Generative AI Comprehensive Knowledge Base.
 
-Core Machine Learning Paradigms:
-1. Supervised Learning: Models learn mapping functions from labeled training datasets containing features (X) and ground-truth targets (y).
-   - Classification: Predicting discrete categorical class labels (e.g., Logistic Regression, Support Vector Machines SVM, Random Forests, XGBoost). Metrics: Accuracy, Precision, Recall, F1-Score, ROC-AUC, Confusion Matrix.
-   - Regression: Predicting continuous numerical values (e.g., Linear Regression, Ridge/Lasso regularization, Polynomial Regression). Metrics: Mean Squared Error (MSE), Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), R-squared (R2).
-2. Unsupervised Learning: Discovering inherent patterns, clusters, or representations in unlabeled data.
-   - Clustering: Grouping data points by geometric proximity or density (e.g., K-Means, Hierarchical Clustering, DBSCAN).
-   - Dimensionality Reduction: Compressing high-dimensional feature spaces while preserving variance (e.g., Principal Component Analysis PCA, t-SNE, UMAP).
-3. Reinforcement Learning (RL): An agent learns optimal policy actions through trial-and-error interactions with an environment, maximizing cumulative scalar reward signals via Markov Decision Processes (MDP). Algorithms: Q-Learning, Deep Q-Networks (DQN), Proximal Policy Optimization (PPO). Used extensively in Reinforcement Learning from Human Feedback (RLHF) to align Large Language Models.
+1. Machine Learning Fundamentals and Paradigms:
+- Supervised Learning: Algorithms learn a predictive mapping function f(X) -> y from labeled training datasets.
+  - Classification (Discrete Categories):
+    - Logistic Regression: Models the probability of a binary categorical outcome using the logistic sigmoid function sigma(z) = 1 / (1 + e^(-z)). Minimizes Binary Cross-Entropy Loss (Log-Loss).
+    - Decision Trees: Non-parametric supervised model partitioning feature space recursively based on splitting criteria: Information Gain (maximizing reduction in Shannon Entropy H = -sum(p * log2(p))) or Gini Impurity (Gini = 1 - sum(p^2)). Algorithms: CART (Classification and Regression Trees), ID3, C4.5. Pruning (cost-complexity pruning) prevents overfitting.
+    - Random Forests: Ensemble learning method utilizing Bootstrap Aggregating (Bagging). Trains hundreds of de-correlated decision trees on random subsets of training data (bootstrap samples) with random feature subspace sampling at each split; aggregates predictions via majority voting (classification) or mean averaging (regression). Reduces variance without increasing bias; estimates generalization error via Out-of-Bag (OOB) error.
+    - Gradient Boosting Machines (GBM): Sequential ensemble technique where each new weak learner (shallow regression tree) is trained to fit the pseudo-residuals (negative gradient of the loss function) of the preceding ensemble:
+      - AdaBoost: Adaptively increases weights of misclassified instances in subsequent iterations.
+      - XGBoost (Extreme Gradient Boosting): Implements second-order Taylor expansion of the loss function, tree pruning with max depth, L1/L2 regularization on leaf weights, and hardware cache optimization.
+      - LightGBM: Uses Gradient-based One-Side Sampling (GOSS) and Exclusive Feature Bundling (EFB) with leaf-wise tree growth.
+    - Support Vector Machines (SVM): Finds the optimal maximum-margin hyperplane separating classes in high-dimensional feature space. Data points lying closest to the decision boundary that dictate the margin are called Support Vectors. Soft-margin SVM introduces slack variables and a regularization hyperparameter C balancing margin width against classification errors. Kernel Trick maps non-linearly separable inputs into higher-dimensional Hilbert spaces without computing explicit coordinate transformations, using kernel functions like Radial Basis Function (RBF / Gaussian: K(x, y) = exp(-gamma * ||x - y||^2)), Polynomial, and Linear kernels.
+    - K-Nearest Neighbors (KNN): Non-parametric, instance-based "lazy learner" classifying a query sample by majority vote among its k nearest neighbors using distance metrics (Euclidean, Manhattan, Minkowski). Sensitive to the curse of dimensionality and feature scaling (requires StandardScaler).
+    - Naive Bayes: Probabilistic classifier based on Bayes' Theorem: P(y|X) = (P(X|y) * P(y)) / P(X). Relies on the strong "naive" conditional independence assumption that all input features are mutually independent given the class label. Variants include Gaussian Naive Bayes (continuous features), Multinomial Naive Bayes (word count frequencies in NLP), and Bernoulli Naive Bayes (binary presence/absence).
+  - Regression (Continuous Numerical Values):
+    - Linear Regression: Models relationships via y = w^T * X + b by minimizing Ordinary Least Squares (OLS) Residual Sum of Squares (RSS).
+    - Regularization:
+      - L1 Regularization (Lasso Regression): Adds penalty term lambda * sum(|w_i|); shrinks non-informative weights strictly to zero, performing intrinsic feature selection.
+      - L2 Regularization (Ridge Regression / Weight Decay): Adds penalty term lambda * sum(w_i^2); shrinks weights towards zero without setting them exactly to zero, effectively mitigating multicollinearity.
+      - ElasticNet: Convex combination of L1 and L2 penalties.
+  - Evaluation Metrics:
+    - Classification: Confusion Matrix (TP, FP, TN, FN), Accuracy = (TP + TN) / Total, Precision = TP / (TP + FP), Recall (Sensitivity) = TP / (TP + FN), Specificity = TN / (TN + FP), F1-Score = 2 * (Precision * Recall) / (Precision + Recall), ROC Curve (Receiver Operating Characteristic plotting True Positive Rate vs False Positive Rate across all classification thresholds), Area Under the ROC Curve (ROC-AUC), Precision-Recall AUC (PR-AUC, preferred for heavily imbalanced datasets).
+    - Regression: Mean Squared Error (MSE), Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and Coefficient of Determination (R^2 Score).
 
-Overfitting, Underfitting, and Generalization:
-- Bias-Variance Tradeoff:
-  - High Bias (Underfitting): Model is overly simplistic and fails to capture underlying patterns in training data; exhibits high training error and high test error.
-  - High Variance (Overfitting): Model memorizes training noise and fails to generalize to unseen test data; exhibits very low training error but high test error.
-- Regularization Techniques: L1 Regularization (Lasso, promotes sparse feature weights by adding absolute magnitude penalty), L2 Regularization (Ridge / Weight Decay, prevents large weights by adding squared magnitude penalty), Dropout (randomly deactivating neurons during training in neural networks), Early Stopping, and Cross-Validation (K-Fold CV).
+- Unsupervised Learning:
+  - Clustering:
+    - K-Means: Iterative centroid-based clustering minimizing Within-Cluster Sum of Squares (WCSS / inertia) via Lloyd's algorithm: (1) Assign each point to the nearest centroid, (2) Recompute centroids as the mean of assigned points, until convergence. Optimal k selected using the Elbow Method and Silhouette Coefficient (measuring intra-cluster tightness vs inter-cluster separation, score between -1 and +1).
+    - Hierarchical Clustering: Agglomerative (bottom-up) or Divisive (top-down) clustering visualized via Dendrograms; linkage criteria include Ward's minimum variance, complete linkage, and average linkage.
+    - DBSCAN (Density-Based Spatial Clustering of Applications with Noise): Discovers arbitrary-shaped clusters based on spatial density; classifies points as Core Points (having at least minPts within radius epsilon), Border Points, or Noise (outliers). Does not require pre-specifying the number of clusters k.
+  - Dimensionality Reduction:
+    - Principal Component Analysis (PCA): Linear, orthogonal transformation projecting data onto principal axes maximizing variance; computed via eigendecomposition of the data covariance matrix or Singular Value Decomposition (SVD).
+    - t-SNE (t-Distributed Stochastic Neighbor Embedding): Non-linear probabilistic technique converting Euclidean distances into conditional probabilities; preserves local neighborhood structures for 2D/3D visualization.
+    - UMAP (Uniform Manifold Approximation and Projection): Non-linear dimensionality reduction based on Riemannian geometry and algebraic topology, preserving both local and global data structure faster than t-SNE.
 
-Deep Learning and Neural Network Architectures:
-- Artificial Neural Networks (ANN): Multilayer Perceptrons (MLP) consisting of input, hidden, and output layers with non-linear activation functions (ReLU, Sigmoid, Tanh, GELU, Leaky ReLU).
-- Training Mechanism: Forward propagation computes predictions; Loss functions (Cross-Entropy Loss for classification, Mean Squared Error for regression) quantify error; Backpropagation computes gradients using the calculus chain rule; Optimizers (Stochastic Gradient Descent SGD, Adam, AdamW, RMSprop) iteratively update model weights.
-- Convolutional Neural Networks (CNN): Specialized for grid-structured image data using convolutional filters, weight sharing, and pooling layers (e.g., ResNet, VGG, EfficientNet).
-- Recurrent Neural Networks (RNN) and LSTM/GRU: Sequential models processing time-series or text, maintaining hidden states across time steps. LSTMs mitigate vanishing and exploding gradient problems using Input, Forget, and Output gates.
+- Bias-Variance Tradeoff and Validation:
+  - Bias Error: Error from erroneous assumptions in the learning algorithm (underfitting; model fails to capture underlying data patterns; high train error, high test error).
+  - Variance Error: Error from sensitivity to small fluctuations in the training set (overfitting; model memorizes noise and fails to generalize; low train error, high test error).
+  - K-Fold Cross-Validation: Splits dataset into K equal subsets; trains on K-1 folds and evaluates on the remaining fold across K rotations, computing the mean performance to prevent data leakage and validation overfitting. Stratified K-Fold maintains original class distribution proportions in each fold.
 
-The Transformer Architecture and Large Language Models (LLMs):
-- Introduced by Vaswani et al. in the seminal 2017 Google research paper "Attention Is All You Need".
-- Self-Attention Mechanism: Computes dynamic contextual representations by comparing Query (Q), Key (K), and Value (V) vector projections:
+2. Deep Learning and Neural Network Architectures:
+- Artificial Neural Networks (ANN): Multilayer Perceptrons (MLP) consisting of input layer, one or more hidden layers, and an output layer. Neurons compute an affine transformation followed by a non-linear activation: z = w^T * x + b, a = f(z).
+- Activation Functions:
+  - Sigmoid: sigma(z) = 1 / (1 + e^(-z)); outputs values in range (0, 1); susceptible to vanishing gradients for large |z| because derivative sigma'(z) = sigma(z)(1 - sigma(z)) maxes out at 0.25.
+  - Hyperbolic Tangent (Tanh): tanh(z) = (e^z - e^(-z)) / (e^z + e^(-z)); zero-centered in range (-1, 1); still suffers from vanishing gradients at saturation.
+  - Rectified Linear Unit (ReLU): f(z) = max(0, z); derivative is 1 for z > 0 and 0 for z < 0; eliminates vanishing gradient problem in positive domain and provides computational efficiency; susceptible to the "Dying ReLU" problem where neurons permanently output 0 if weights update such that z < 0 across all inputs.
+  - Leaky ReLU: f(z) = max(alpha * z, z) where alpha is a small positive constant (e.g., 0.01), preventing dying neurons by maintaining a non-zero gradient for negative inputs.
+  - GELU (Gaussian Error Linear Unit): Smooth non-linearity scaling inputs by the standard Gaussian cumulative distribution function; default activation in modern Transformer architectures including BERT, GPT-2, GPT-3, and LLaMA.
+  - Softmax: Converts unnormalized logits vector z into a categorical probability distribution summing to 1: Softmax(z_i) = exp(z_i) / sum(exp(z_j)).
+- Backpropagation and Optimization:
+  - Forward Propagation computes predictions; Loss functions quantify discrepancy with ground truth (Cross-Entropy Loss for classification, Mean Squared Error for regression).
+  - Backpropagation calculates the partial derivative of the loss function with respect to every weight and bias parameter in the network using the recursive calculus Chain Rule, propagating gradients from output layer back to input layer.
+  - Vanishing and Exploding Gradient Problem: In deep networks, repeated matrix multiplications in the chain rule cause gradients to shrink exponentially towards zero (vanishing, preventing early layers from learning) or grow exponentially towards infinity (exploding, causing numerical instability / NaN). Mitigated by: He/Xavier weight initialization, Residual/Skip connections (ResNet), Batch Normalization, Layer Normalization, and Gradient Clipping.
+  - Optimizers:
+    - Stochastic Gradient Descent (SGD): Updates weights using individual random samples or mini-batches: w = w - eta * grad_w.
+    - Momentum: Accelerates SGD in directions of consistent gradient by maintaining an exponentially decaying moving average of past gradients: v = beta * v + eta * grad_w; dampens oscillations.
+    - RMSprop: Scales learning rate adaptively by dividing the gradient by the square root of the moving average of squared gradients.
+    - Adam (Adaptive Moment Estimation): Combines Momentum (first moment, mean of gradients) and RMSprop (second uncentered moment, variance of gradients) with bias corrections; default standard optimizer in deep learning.
+    - AdamW: Modifies Adam by decoupling L2 weight decay regularization from the gradient update calculations, improving generalization in Transformers.
+
+- Convolutional Neural Networks (CNN):
+  - Specialized for grid-like topology (computer vision, 2D images, 1D audio). Key operations: Convolution (sliding learnable kernel filters computing dot products, enforcing spatial locality and translation invariance via parameter sharing), Activation, and Pooling (Max Pooling, Average Pooling reducing spatial dimensions).
+  - Landmark Architectures: LeNet-5 (Yann LeCun 1998), AlexNet (Krizhevsky et al. 2012, ImageNet breakthrough), VGG (Simonyan & Zisserman 2014, homogeneous 3x3 convolutions), ResNet (He et al. 2015, introduces Residual Blocks with identity shortcut skip connections H(x) = F(x) + x, enabling stable training of 100+ layer networks by allowing gradients to flow unimpeded directly through residual connections).
+
+- Recurrent Neural Networks (RNN) and Sequential Models:
+  - Processes sequential data by updating a persistent hidden state vector h_t = tanh(W_hh * h_{t-1} + W_xh * x_t + b).
+  - Backpropagation Through Time (BPTT): Unrolls the network across time steps; highly susceptible to vanishing and exploding gradients over long sequence lengths.
+  - Long Short-Term Memory (LSTM): Hochreiter & Schmidhuber (1997); solves vanishing gradients via an explicit linear Cell State (C_t) regulated by three multiplicative gating mechanisms:
+    1. Forget Gate (f_t = sigma(W_f * [h_{t-1}, x_t] + b_f)): Decides what information to discard from the previous cell state.
+    2. Input Gate (i_t = sigma(W_i * [h_{t-1}, x_t] + b_i)) and Candidate Cell State (tilde{C}_t = tanh(W_c * [h_{t-1}, x_t] + b_c)): Decides what new information to store in the cell state.
+    3. Output Gate (o_t = sigma(W_o * [h_{t-1}, x_t] + b_o)) and Hidden State (h_t = o_t * tanh(C_t)): Decides what parts of the cell state to output to the next time step.
+  - Gated Recurrent Unit (GRU): Cho et al. (2014); simplified variant merging cell state and hidden state, using only two gates: Reset Gate (r_t) and Update Gate (z_t).
+
+3. The Transformer Architecture and Large Language Models (LLMs):
+- Introduced by Vaswani et al. (Google Research, 2017) in "Attention Is All You Need", replacing recurrent architectures with parallelizable self-attention mechanisms.
+- Scaled Dot-Product Attention:
   Attention(Q, K, V) = softmax((Q * K^T) / sqrt(d_k)) * V
-- Multi-Head Attention: Allows models to simultaneously attend to information from different representation subspaces at different positions.
-- Positional Encoding: Injects sequence order information into token embeddings since attention operations are permutation-invariant.
-- Types of Transformers:
-  - Encoder-only: Bidirectional contextual representation models; optimal for classification and NER (e.g., BERT, RoBERTa).
-  - Decoder-only: Autoregressive causal language models predicting the next token; optimal for text generation (e.g., GPT-3, GPT-4, Llama, Gemini, Mistral).
-  - Encoder-Decoder: Sequence-to-sequence models (e.g., T5, BART).
+  - Queries (Q), Keys (K), and Values (V) are linear projections of input token representations.
+  - Dot product Q * K^T computes raw pairwise similarity scores between every token and every other token in the sequence.
+  - Scaling factor 1 / sqrt(d_k) prevents dot products from growing excessively large for large dimensions, which would push the softmax function into regions with vanishingly small gradients.
+  - Softmax normalizes scores into an attention weights matrix summing to 1 across rows.
+  - Multiplying by Values (V) computes the weighted contextual representation of each token.
+- Multi-Head Attention (MHA): Linearly projects Q, K, and V into h different representation subspaces, performs scaled dot-product attention in parallel for each head, concatenates the head outputs, and projects through a final linear layer W_O. Allows the model to simultaneously attend to syntax, semantics, and long-range dependencies across distinct positions.
+- Positional Encodings: Transformers lack intrinsic recurrence or convolution, making attention operations permutation-invariant. Positional encodings inject token sequence order information:
+  - Sinusoidal Positional Encoding (original Transformer): Uses fixed sine and cosine functions of varying frequencies.
+  - Rotary Position Embedding (RoPE): Encodes relative position by multiplying query and key representations with a rotation matrix in complex space; used in modern LLMs including LLaMA, Mistral, and Qwen.
+  - ALiBi (Attention with Linear Biases): Injects static negative bias into attention scores proportional to token distance, enabling strong length extrapolation.
+- Normalization and Feed-Forward Networks:
+  - Layer Normalization: Computes mean and variance across feature channels for each individual token independently of batch size (unlike Batch Normalization). Modern architectures use RMSNorm (Root Mean Square Normalization), which omits mean centering and scales by root mean square, reducing compute by ~20%.
+  - Pre-LN vs Post-LN: Pre-LayerNorm applies normalization before the self-attention and FFN sub-layers (inside the residual branch), providing superior gradient stability during large-scale pre-training.
+  - SwiGLU: Swish-Gated Linear Unit; non-linear activation replacing standard ReLU/GELU in modern FFN layers.
+- Model Types:
+  - Encoder-Only (Autoencoding): Bidirectional context; trained via Masked Language Modeling (MLM); optimal for text classification, named entity recognition, and sentence embeddings (e.g., BERT, RoBERTa, DeBERTa).
+  - Decoder-Only (Autoregressive): Unidirectional causal attention mask preventing tokens from attending to subsequent tokens; trained via Next-Token Prediction (Causal Language Modeling); standard architecture for modern generative LLMs (e.g., GPT-3, GPT-4, LLaMA, Gemini, Claude, Mistral, DeepSeek).
+  - Encoder-Decoder (Sequence-to-Sequence): Processes input sequence with bidirectional encoder, generates target sequence with autoregressive decoder; optimal for translation and summarization (e.g., T5, BART).
 
-AI Hallucination in Generative Models:
-- Definition: Generation of fluent, grammatically correct text that is factually false, ungrounded, or contradicts real-world facts or provided source context.
-- Causes: Training on noisy web data, exposure bias, absence of grounding, stochastic sampling randomness (temperature > 0), and parametric memory limits.
-- Mitigation Strategies:
-  1. Retrieval-Augmented Generation (RAG): Grounding responses in retrieved external documents using vector similarity search (dense embeddings + sparse TF-IDF/BM25).
-  2. Factuality Verification / Hallucination Detection: Decomposing generated answers into atomic propositions and verifying each proposition via Natural Language Inference (NLI) classification (Supported, Contradicted, Insufficient Evidence).
-  3. Chain-of-Thought (CoT) and Self-Consistency prompting.
+4. Training, Alignment, and Adaptation of LLMs:
+- Pre-training: Self-supervised learning on trillions of tokens of raw text (Common Crawl, Wikipedia, books, code) predicting the next token, capturing world knowledge, grammar, and reasoning patterns into model weights.
+- Supervised Fine-Tuning (SFT): Instruction tuning on curated prompt-response pairs, training base models to follow human instructions, act as conversational assistants, and produce structured outputs (JSON).
+- Alignment with Human Preferences:
+  - Reinforcement Learning from Human Feedback (RLHF):
+    1. Collect human preference comparisons between model responses (Response A > Response B).
+    2. Train a Reward Model (RM) to assign scalar scores reflecting human preference.
+    3. Optimize policy using Proximal Policy Optimization (PPO) against the reward model, adding a Kullback-Leibler (KL) divergence penalty to prevent policy drift away from the base SFT model.
+  - Direct Preference Optimization (DPO): Rafailov et al. (2023); mathematically derives the optimal policy directly from preference data without training an explicit reward model or using reinforcement learning, significantly simplifying training stability.
+- Parameter-Efficient Fine-Tuning (PEFT):
+  - Low-Rank Adaptation (LoRA): Freezes pre-trained weight matrices W_0 in d x k and injects trainable rank decomposition matrices: W = W_0 + Delta_W = W_0 + B * A, where B is d x r and A is r x k, with rank r << min(d, k). Reduces trainable parameters by over 99% while matching full fine-tuning performance.
+  - QLoRA: Quantizes base model weights to 4-bit NormalFloat (NF4) and attaches 16-bit LoRA adapters, enabling fine-tuning of 70B parameter models on single consumer GPUs.
+
+5. AI Hallucination and Retrieval-Augmented Generation (RAG):
+- AI Hallucination Definition: Production by a generative model of statements that are grammatically fluent and semantically plausible but factually incorrect, unverifiable, or inconsistent with real-world ground truth or provided reference context.
+- Taxonomy of Hallucinations:
+  1. Entity Inversion / Error: Assigning actions, inventions, or attributes to the wrong person, company, or entity (e.g., claiming James Gosling invented Python).
+  2. Date and Numerical Inaccuracy: Fabricating incorrect years, measurements, statistics, or status codes.
+  3. Paradigm / Factual Fabrication: Stating completely fabricated mechanisms (e.g., claiming C is an interpreted, garbage-collected language).
+  4. Algorithmic Complexity Inversion: Misrepresenting algorithmic bounds (e.g., claiming Binary Search is O(N^2)).
+- RAG Pipeline Architecture:
+  1. Document Ingestion: Text chunking with sentence boundaries and semantic overlap.
+  2. Indexing: Vector embedding generation (dense representation) and TF-IDF/BM25 indexing (sparse representation).
+  3. Retrieval: Top-k similarity search using Cosine Similarity or dot-product over normalized vector embeddings.
+  4. Augmentation: Combining retrieved authoritative context passages with user prompts.
+  5. Generation and Factuality Verification: LLM generation grounded in retrieved context; automated evaluation pipelines decompose responses into atomic claims and perform Natural Language Inference (NLI) classification:
+     - SUPPORTED (Entailment): Claim is confirmed by retrieved evidence.
+     - CONTRADICTED (Contradiction): Claim directly conflicts with retrieved evidence (hallucination).
+     - INSUFFICIENT_EVIDENCE (Neutral): Evidence does not contain adequate information to confirm or refute the claim (epistemic uncertainty).

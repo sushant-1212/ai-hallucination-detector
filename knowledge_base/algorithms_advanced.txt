@@ -1,29 +1,101 @@
-Algorithms and data structure performance characteristics are analyzed using asymptotic notation: Big-O (upper bound), Big-Omega (lower bound), and Big-Theta (tight bound).
+Algorithms, Data Structures, Computational Complexity, and Design Paradigms Comprehensive Knowledge Base.
 
-Time and Space Complexity Fundamentals:
-- Constant Time O(1): Execution time remains strictly constant regardless of input size N. Examples include accessing an array element by index, push/pop on a stack, or looking up a key in a hash table with no collisions.
-- Logarithmic Time O(log N): Typical of divide-and-conquer searching algorithms. Binary search on a sorted array of size N achieves O(log N) worst-case time complexity, halving the search space in each iteration. Binary search does not have O(N^2) complexity.
-- Linear Time O(N): Execution time scales linearly with input size (e.g., linear scan of an unsorted array, counting elements).
-- Linearithmic Time O(N log N): Typical of optimal comparison-based sorting algorithms.
-- Quadratic Time O(N^2): Typical of naive nested loops, bubble sort, selection sort, or insertion sort.
-- Exponential Time O(2^N) and Factorial Time O(N!): Intractable for large inputs; typical of combinatorial brute-force searches (Traveling Salesperson Problem, boolean satisfiability).
+1. Asymptotic Complexity and Algorithm Analysis:
+- Asymptotic Notations:
+  - Big-O Notation (O): Formal mathematical upper bound on algorithm growth rate. f(N) = O(g(N)) if there exist positive constants c and n_0 such that f(N) <= c * g(N) for all N >= n_0. Describes worst-case execution performance.
+  - Big-Omega Notation (Omega): Formal mathematical lower bound. f(N) = Omega(g(N)) if f(N) >= c * g(N) for all N >= n_0. Describes best-case execution performance.
+  - Big-Theta Notation (Theta): Formal tight bound indicating matching upper and lower bounds: c_1 * g(N) <= f(N) <= c_2 * g(N).
+  - Little-o (o) and Little-omega (omega): Non-tight strict upper and lower bounds.
+- Master Theorem for Divide-and-Conquer Recurrences:
+  Solves recurrence relations of the form T(N) = a * T(N/b) + f(N), where a >= 1 is the number of subproblems, b > 1 is the factor by which subproblem size is reduced, and f(N) = Theta(N^c) is the cost of division and combination:
+  - Case 1: If c < log_b(a), then T(N) = Theta(N^(log_b(a))).
+  - Case 2: If c = log_b(a), then T(N) = Theta(N^c * log N). (MergeSort falls into Case 2: T(N) = 2T(N/2) + Theta(N) -> a=2, b=2, c=1 -> T(N) = Theta(N log N)).
+  - Case 3: If c > log_b(a) and regularity condition holds, then T(N) = Theta(f(N)).
+- Complexity Classes:
+  - Constant Time O(1): Execution time is strictly independent of input size N (e.g., hash table average lookup, array indexing, stack push/pop).
+  - Logarithmic Time O(log N): Execution time grows proportionally to the logarithm of input size; typical of divide-and-conquer search. Binary search on a sorted array achieves O(log N) worst-case time complexity, halving the search space in each iteration. Binary search does not have O(N^2) complexity.
+  - Linear Time O(N): Execution scales directly with input size (e.g., linear scan of unsorted array, counting elements).
+  - Linearithmic Time O(N log N): Optimal comparison-based sorting time (e.g., MergeSort, HeapSort).
+  - Quadratic Time O(N^2): Typical of nested loops over input (e.g., Bubble Sort, Selection Sort, Insertion Sort worst case, QuickSort worst case).
+  - Polynomial Time (P): Solvable in O(N^k) for constant k.
+  - Non-Deterministic Polynomial Time (NP): Decision problems whose solutions can be verified in polynomial time.
+  - NP-Complete: The hardest problems in NP; if any NP-Complete problem is solvable in polynomial time, then P = NP (e.g., Traveling Salesperson Problem TSP, 3-SAT, Knapsack, Hamiltonian Cycle).
+  - NP-Hard: At least as hard as the hardest problems in NP; does not require verification in polynomial time.
 
-Sorting Algorithms:
-- MergeSort: A stable divide-and-conquer sorting algorithm that splits the array into two halves, recursively sorts them, and merges the sorted subarrays using an auxiliary buffer. MergeSort possesses a guaranteed worst-case, average-case, and best-case time complexity of O(N log N). Its auxiliary space complexity is O(N).
-- QuickSort: An in-place partitioning sorting algorithm that selects a pivot element and partitions the array into elements smaller than and larger than the pivot. QuickSort has an average-case time complexity of O(N log N) and space complexity of O(log N) due to recursive stack frames. However, if an unbalanced pivot is chosen repeatedly (e.g., picking the first element on an already-sorted array without randomization), QuickSort degrades to a worst-case time complexity of O(N^2). QuickSort does not have a guaranteed O(N) complexity across all cases.
-- HeapSort: Comparison-based sorting algorithm using a binary max-heap. Guarantees O(N log N) time complexity in all cases (worst, average, best) and operates in-place with O(1) auxiliary space.
-- Non-comparison Sorts: Counting Sort runs in O(N + K) time, and Radix Sort runs in O(d * (N + K)) time, beating the theoretical O(N log N) lower bound for comparison sorts by exploiting digit or integer value constraints.
+2. Sorting Algorithms:
+- Comparison-Based Sorts:
+  - Theoretical Lower Bound: Any comparison-based sorting algorithm requires at least Omega(N log N) comparisons in the worst case, proven via decision tree models with N! leaves (height >= log2(N!) = Theta(N log N)).
+  - MergeSort: Stable divide-and-conquer algorithm. Recursively splits array into halves, sorts subarrays, and merges them using an auxiliary buffer. Possesses a guaranteed worst-case, average-case, and best-case time complexity of O(N log N). Auxiliary space complexity is O(N).
+  - QuickSort: In-place partitioning algorithm selecting a pivot and partitioning elements smaller than the pivot to the left and larger to the right. Has an average-case time complexity of O(N log N) and space complexity of O(log N) from recursive call frames. However, if an unbalanced pivot is chosen repeatedly (such as picking the first element on an already sorted array without randomization), QuickSort degrades to a worst-case time complexity of O(N^2). QuickSort does not have a guaranteed O(N) complexity across all cases. Mitigated by Randomized QuickSort or Median-of-Three pivot selection.
+  - HeapSort: Comparison sort utilizing a binary max-heap. Guarantees O(N log N) worst-case, average-case, and best-case time complexity while operating in-place with O(1) auxiliary space; unstable.
+  - TimSort: Hybrid stable sorting algorithm combining MergeSort and InsertionSort. Identifies natural ascending or descending runs in data, using binary insertion sort for short runs (< 32 elements) and merging runs using merge rules. Worst-case and average-case complexity is O(N log N), and best-case on already sorted data is O(N). TimSort is the default sorting algorithm in Python (list.sort(), sorted()) and Java (Arrays.sort() for non-primitive objects).
+  - Insertion Sort: Simple adaptive sort inserting each element into its proper position in a sorted prefix. Best-case on nearly sorted data is O(N); average and worst-case is O(N^2). In-place and stable.
+- Non-Comparison Sorts (Breaking the O(N log N) Barrier):
+  - Counting Sort: Counts frequencies of discrete integer keys within range [0, K]; runs in O(N + K) time and O(N + K) space; stable.
+  - Radix Sort: Sorts integers or fixed-length strings digit-by-digit from Least Significant Digit (LSD) to Most Significant Digit (MSD) using Counting Sort as a stable subroutine; runs in O(d * (N + K)) time, where d is the number of digits and K is the radix/base.
+  - Bucket Sort: Distributes elements into uniformly distributed buckets, sorts individual buckets (typically with insertion sort), and concatenates results; average-case complexity is O(N + K) under uniform distribution.
 
-Data Structures:
-- Hash Tables: Implement an associative array abstract data type using a hash function to map keys to bucket indices. Under uniform hashing and reasonable load factors (alpha < 0.75), hash tables provide average-case O(1) time complexity for insertion, lookup, and deletion. Collision resolution methods include Separate Chaining (linked lists or balanced trees per bucket) and Open Addressing (Linear Probing, Quadratic Probing, Double Hashing). In the pathological worst case where all keys hash to the same bucket, lookup degrades to O(N).
-- Binary Search Tree (BST): Node-based data structure where the left subtree contains keys smaller than the node, and the right subtree contains keys larger. In a balanced BST, search, insertion, and deletion execute in O(log N) time. However, when degenerate or completely unbalanced (e.g., inserting sequentially sorted keys forming a skewed single-chain tree), search degrades to worst-case linear O(N) time complexity. A standard BST cannot guarantee O(1) lookup.
-- Self-Balancing Trees:
-  - AVL Tree: Strictly height-balanced BST where height difference between left and right subtrees (balance factor) cannot exceed 1; guarantees strict O(log N) search.
-  - Red-Black Tree: Self-balancing BST using color bits (Red and Black) and tree rotations; guarantees O(log N) operations with fewer rotations on insertions/deletions than AVL trees. Used in C++ std::map, Java TreeMap, and Linux CFS process scheduling.
+3. Core and Advanced Data Structures:
+- Linear Data Structures:
+  - Arrays: Contiguous memory blocks offering O(1) random access by index via pointer arithmetic: Address(A[i]) = Base + i * sizeof(element). Insertion and deletion at arbitrary index require shifting elements in O(N) time.
+  - Linked Lists: Dynamic data structures where nodes store values and pointers to successor nodes (Singly Linked List) or both predecessor and successor nodes (Doubly Linked List). Non-contiguous memory; O(1) insertion and deletion given a node pointer; O(N) sequential search traversal.
+  - Stacks and Queues: Stack operates on Last-In, First-Out (LIFO) order with push, pop, and peek in O(1) time. Queue operates on First-In, First-Out (FIFO) order with enqueue and dequeue in O(1) time. Deque (Double-Ended Queue) allows O(1) insertions and deletions at both ends.
+- Hash-Based Structures:
+  - Hash Tables: Implement associative arrays mapping keys to bucket indices using a hash function. Under uniform hashing and load factor alpha = N / M < 0.75, hash tables provide average-case O(1) time complexity for insertion, lookup, and deletion. In the pathological worst case where all keys collide into the exact same bucket, lookup degrades to linear O(N) time.
+  - Collision Resolution Strategies:
+    - Separate Chaining: Each bucket points to a linked list or self-balancing binary search tree (Java 8 HashMap converts linked lists to Red-Black trees when bucket size exceeds 8, improving worst-case collision lookup to O(log N)).
+    - Open Addressing: Stores all elements directly in the hash table array. On collision, probes for an alternative empty slot: Linear Probing (probe i + 1, suffers from primary clustering), Quadratic Probing (probe i + c1*k + c2*k^2, suffers from secondary clustering), or Double Hashing (uses a secondary hash function hash2(key) as step size).
+  - Bloom Filter: Space-efficient probabilistic data structure used to test set membership. Uses an array of m bits and k independent hash functions. Guarantees zero false negatives (if it returns "not in set", the item is definitively not in the set), but permits a configurable rate of false positives (it may report an item is "possibly in set" when it is not). Deletions are impossible in standard Bloom filters without Counting Bloom Filters.
+- Trees and Hierarchical Structures:
+  - Binary Search Tree (BST): Node-based data structure where all keys in the left subtree are smaller than the node, and all keys in the right subtree are larger. When balanced, search, insertion, and deletion execute in O(log N) time. However, when degenerate or completely unbalanced (e.g., inserting sequentially sorted elements forming a skewed single-chain tree), search degrades to worst-case linear O(N) time complexity. A basic BST cannot guarantee O(1) lookup.
+  - AVL Tree: Self-balancing BST strictly enforcing that the height difference between left and right subtrees (the balance factor) is at most 1 for every node. Guarantees strict O(log N) search, insert, and delete through tree rotations (Left-Left LL, Right-Right RR, Left-Right LR, Right-Left RL).
+  - Red-Black Tree: Self-balancing BST enforcing balance via node coloring (Red or Black) and five structural invariants: (1) Every node is either red or black, (2) Root is black, (3) Leaves (NIL) are black, (4) If a node is red, both children are black (no adjacent red nodes), (5) Every path from a node to descendant NIL leaves contains the exact same number of black nodes (black-height). Guarantees O(log N) operations with fewer tree rotations on insertions and deletions than AVL trees. Widely used in systems programming: C++ std::map and std::set, Java TreeMap and TreeSet, and the Linux Completely Fair Scheduler (CFS).
+  - B-Trees and B+ Trees: Self-balancing M-way search trees designed for disk storage and database indexing:
+    - B-Tree: Internal and leaf nodes store keys and data records; minimizes disk block I/O operations.
+    - B+ Tree: Internal nodes store only indexing keys for routing; all actual data records and row pointers reside strictly in leaf nodes. Leaf nodes are linked sequentially in a doubly linked list, enabling exceptionally high-speed range scans (e.g., SELECT * WHERE age BETWEEN 20 AND 30). Standard index structure in MySQL InnoDB, PostgreSQL, and file systems (NTFS, ext4).
+  - Trie (Prefix Tree): Tree data structure for retrieving strings over an alphabet. Each node represents a character; paths from root to marked leaf nodes represent words. Insertion, search, and prefix matching run in O(L) time, where L is the length of the query string, completely independent of the total number of words in the dictionary.
+  - Disjoint Set Union (DSU / Union-Find): Data structure tracking partitioned disjoint sets. Supports two operations: find(x) (determines which set x belongs to) and union(x, y) (merges sets containing x and y). Optimized via Path Compression (flattening tree structure during find) and Union by Rank/Size (attaching smaller tree under root of larger tree). Achieves near-constant amortized time complexity O(alpha(N)) per operation, where alpha is the Inverse Ackermann function (alpha(N) < 5 for all practical universe scales).
+  - Segment Tree and Fenwick Tree (Binary Indexed Tree / BIT):
+    - Segment Tree: Full binary tree storing aggregate interval information (range sums, minimums, maximums); supports range queries and point updates in O(log N) time with O(N) construction.
+    - Fenwick Tree: Compact array-based data structure storing prefix cumulative sums using binary representation of indices; supports prefix sum queries and point updates in O(log N) time with O(N) space and minimal constant factors.
 
-Graph Algorithms:
-- Breadth-First Search (BFS): Traverses graphs layer by layer using a queue. Time complexity is O(V + E); finds shortest paths in unweighted graphs.
-- Depth-First Search (DFS): Explores graph paths deeply using recursion or a stack. Time complexity is O(V + E); used for topological sorting, cycle detection, and strongly connected components (Tarjan's or Kosaraju's algorithms).
-- Dijkstra's Algorithm: Computes single-source shortest paths on weighted graphs with non-negative edge weights using a min-heap priority queue; time complexity is O((V + E) log V).
-- Bellman-Ford Algorithm: Computes single-source shortest paths and detects negative-weight cycles; time complexity is O(V * E).
-- Minimum Spanning Tree (MST): Kruskal's algorithm uses Disjoint Set Union (DSU / Union-Find) with path compression and union by rank in O(E log E) time; Prim's algorithm grows a tree using a priority queue in O((V + E) log V) time.
+4. Graph Theory and Algorithms:
+- Graph Representation:
+  - Adjacency Matrix: V x V 2D array where matrix[u][v] indicates edge existence and weight; O(V^2) space complexity; O(1) edge lookup; inefficient for sparse graphs.
+  - Adjacency List: Array or hash map of lists storing neighbor vertices for each vertex; O(V + E) space complexity; optimal for sparse graphs.
+- Graph Traversals:
+  - Breadth-First Search (BFS): Explores vertices level-by-level using a FIFO queue. Time complexity is O(V + E); space complexity is O(V). Computes single-source shortest paths on unweighted graphs.
+  - Depth-First Search (DFS): Explores vertices deeply along branches before backtracking using a LIFO stack or system recursion. Time complexity is O(V + E); space complexity is O(V). Used for cycle detection, topological sorting, connected components, and bipartite testing.
+- Shortest Path Algorithms:
+  - Dijkstra's Algorithm: Computes single-source shortest paths on weighted graphs with strictly non-negative edge weights. Uses a greedy approach maintaining a min-heap priority queue of unvisited vertices. Time complexity is O((V + E) log V) using a binary heap, or O(E + V log V) using a Fibonacci heap. Fails on graphs containing negative edge weights.
+  - Bellman-Ford Algorithm: Computes single-source shortest paths on directed graphs with positive or negative edge weights. Relaxes all E edges V-1 times using dynamic programming. Time complexity is O(V * E). Detects negative-weight cycles if any edge can still be relaxed on the V-th iteration.
+  - Floyd-Warshall Algorithm: Dynamic programming algorithm computing all-pairs shortest paths on directed weighted graphs without negative cycles. Computes intermediate vertex paths via d[i][j] = min(d[i][j], d[i][k] + d[k][j]) for all k, i, j from 1 to V. Time complexity is O(V^3); space complexity is O(V^2).
+  - A* Search Algorithm: Best-first graph traversal algorithm used for pathfinding. Evaluates nodes using the cost function f(n) = g(n) + h(n), where g(n) is the exact known cost from the start node to n, and h(n) is an admissible heuristic estimate of the cost from n to the goal (admissible means h(n) never overestimates the true remaining cost). Guarantees shortest path if h(n) is admissible and consistent.
+- Minimum Spanning Tree (MST):
+  - A tree connecting all vertices in an undirected weighted graph with minimum total edge weight.
+  - Kruskal's Algorithm: Greedy algorithm sorting all E edges in non-decreasing order of weight and iteratively adding edges to the MST if they do not create a cycle, verified using Disjoint Set Union (DSU). Time complexity is O(E log E) dominated by sorting edges.
+  - Prim's Algorithm: Greedy algorithm growing an MST from an arbitrary starting vertex, repeatedly adding the minimum-weight boundary edge connecting the tree to an unvisited vertex using a min-heap priority queue. Time complexity is O((V + E) log V).
+- Topological Sorting:
+  - Linear ordering of vertices in a Directed Acyclic Graph (DAG) such that for every directed edge u -> v, u appears before v in the ordering.
+  - Kahn's Algorithm: BFS-based algorithm maintaining in-degrees of all vertices. Vertices with in-degree 0 are pushed into a queue, dequeued, added to the topological order, and their outgoing edges are removed (decrementing neighbor in-degrees). If the output contains fewer than V vertices, the graph contains a directed cycle. Time complexity is O(V + E).
+  - DFS-Based Topological Sort: Performs DFS traversal and appends vertices to a list in post-order (when backtracking completes); reverses the finished list to yield valid topological order. Time complexity is O(V + E).
+- Strongly Connected Components (SCC):
+  - In a directed graph, an SCC is a maximal subgraph where every vertex is reachable from every other vertex in the subgraph.
+  - Kosaraju's Algorithm: Uses two DFS passes. (1) Run DFS on original graph, recording vertices in order of finishing times on a stack. (2) Transpose the graph (reverse all directed edges). (3) Run DFS on transposed graph in order of the stack; each DFS tree identifies an SCC. Time complexity is O(V + E).
+  - Tarjan's Algorithm: Single DFS pass computing discovery times and lowest reachable discovery times (low-link values) using an explicit stack; time complexity is O(V + E).
+
+5. Dynamic Programming and Algorithm Design Paradigms:
+- Core Paradigms:
+  - Divide and Conquer: Breaks problem into non-overlapping subproblems, solves subproblems recursively, and combines solutions (e.g., MergeSort, QuickSort, Strassen's matrix multiplication in O(N^2.807) time).
+  - Greedy Strategy: Makes locally optimal choices at each decision step hoping to find a global optimum; requires Greedy Choice Property and Optimal Substructure (e.g., Dijkstra, Kruskal, Prim, Huffman Coding, Fractional Knapsack).
+  - Dynamic Programming (DP): Solves optimization problems exhibiting two mandatory properties:
+    1. Optimal Substructure: An optimal solution to the problem contains optimal solutions to its subproblems.
+    2. Overlapping Subproblems: The problem can be broken down into subproblems that are solved repeatedly.
+- DP Approaches:
+  - Top-Down with Memoization: Recursive execution caching computed subproblem results in a hash table or array, avoiding redundant recursive calls.
+  - Bottom-Up with Tabulation: Iterative execution filling a table from base cases up to the target state, avoiding call stack overhead and enabling memory optimization (state compression).
+- Canonical DP Problems:
+  - 0/1 Knapsack Problem: Given weights w_i and values v_i, maximize value without exceeding capacity W where each item can be chosen at most once. Solved via dp[i][w] = max(dp[i-1][w], dp[i-1][w - w_i] + v_i); time complexity is O(N * W), which is pseudo-polynomial.
+  - Longest Common Subsequence (LCS): Finds longest sequence appearing in relative order in two strings of lengths M and N. Solved via 2D DP in O(M * N) time and O(min(M, N)) space.
+  - Longest Increasing Subsequence (LIS): Finds length of longest strictly increasing subsequence in an array of size N. Dynamic programming solves it in O(N^2), but Patience Sorting with Binary Search (std::lower_bound) optimizes it to O(N log N) time complexity.
+  - Matrix Chain Multiplication: Parenthesizes matrix product A_1 * A_2 * ... * A_N to minimize scalar multiplications. Solved via interval DP in O(N^3) time.
