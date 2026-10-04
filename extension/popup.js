@@ -71,6 +71,12 @@ function initUI() {
     grabFromActiveTab("GET_SELECTED_TEXT");
   });
 
+  // Fullscreen / New Tab button
+  const btnFullscreen = document.getElementById("btn-fullscreen");
+  btnFullscreen?.addEventListener("click", () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
+  });
+
   // Verify button
   btnVerify.addEventListener("click", () => {
     performVerification();
