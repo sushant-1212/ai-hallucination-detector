@@ -51,9 +51,16 @@ def _call_gemini_generate(prompt: str, system_prompt: str = "", temperature: flo
     if not key:
         raise ValueError("GOOGLE_API_KEY is missing in your .env file or settings.")
 
-    # Cascading fallback models to maximize free quota across endpoints
-    configured_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
-    fallback_models = ["gemini-2.5-flash-lite", "gemini-flash-latest", "gemini-2.5-flash"]
+    # Cascading fallback models to maximize free quota across all endpoints
+    configured_model = os.getenv("GEMINI_MODEL", "gemini-flash-lite-latest")
+    fallback_models = [
+        "gemini-flash-lite-latest",
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash-lite",
+        "gemini-2.5-flash-lite",
+        "gemini-flash-latest",
+        "gemini-2.5-flash"
+    ]
     if configured_model in fallback_models:
         fallback_models.remove(configured_model)
     models_to_try = [configured_model] + fallback_models
