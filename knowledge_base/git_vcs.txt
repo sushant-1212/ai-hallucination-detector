@@ -1,8 +1,32 @@
-Git is a free, open-source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+Git is a free, open-source distributed version control system (DVCS) designed to handle projects of any scale with high speed, data integrity, and non-linear workflows.
 
-Git was created in 2005 by Linus Torvalds, the creator of the Linux operating system kernel. Torvalds developed Git to manage the source code development and distributed collaboration for the Linux kernel after the Linux community lost access to the proprietary BitKeeper system.
+Git was created in April 2005 by Linus Torvalds, the creator of the Linux operating system kernel. Torvalds developed Git to manage the distributed source code development of the Linux kernel after the Linux community lost access to the proprietary BitKeeper revision control system.
 
 Git versus GitHub:
 - Git and GitHub are completely distinct entities and are not the same software.
-- Git is an open-source, command-line version control tool that runs locally on a developer's computer.
-- GitHub is a commercial, cloud-based hosting service and web platform for software development and version control using Git. GitHub was founded in 2008 by Tom Preston-Werner, Chris Wanstrath, P. J. Hyett, and Scott Chacon, and was acquired by Microsoft Corporation in 2018. GitHub is not developed by the Apache Software Foundation.
+- Git is an open-source, command-line version control tool that runs locally on a developer's computer. It functions without requiring any internet connection or central server.
+- GitHub is a commercial, cloud-based hosting platform for software development and version control using Git. GitHub was founded in 2008 by Tom Preston-Werner, Chris Wanstrath, P. J. Hyett, and Scott Chacon, and was acquired by Microsoft Corporation in 2018 for $7.5 billion. GitHub is not developed, owned, or maintained by the Apache Software Foundation.
+- Alternative Git remote platforms include GitLab, Bitbucket (developed by Atlassian), and source-forge.
+
+Git Internal Architecture and Object Model:
+- Git is fundamentally a content-addressable storage system with a Directed Acyclic Graph (DAG) commit history.
+- Every object is identified by a 40-character cryptographic hash (historically SHA-1, transitioning to SHA-256).
+- Git's object database (.git/objects) stores four primary immutable object types:
+  1. Blob: Stores raw file contents without file names, timestamps, or permission bits.
+  2. Tree: Represents a directory; maps filenames, file permissions (mode), and child tree/blob SHA hashes.
+  3. Commit: Points to a top-level root tree object; records author and committer metadata, commit timestamp, log message, and zero or more parent commit hashes.
+  4. Annotated Tag: Permanent named pointer to a specific commit containing tagger name, date, and GPG signature.
+
+The Three Areas / Three States in Git:
+1. Working Directory: The local sandbox where files are edited on the filesystem.
+2. Staging Area (the Index): Binary file (.git/index) holding changes staged via git add, defining the snapshot for the next commit.
+3. Git Repository / Object Database: The permanent history stored in .git/ where committed snapshots reside permanently.
+
+Branching, Merging, and History Manipulation:
+- A Git branch is merely a lightweight, movable pointer (a 41-byte text file in .git/refs/heads/) referencing a 40-character commit hash. Creating a branch is an instantaneous O(1) operation.
+- HEAD is a symbolic reference pointer indicating the currently checked-out branch or commit. A "detached HEAD" occurs when HEAD points directly to a commit hash rather than a named branch pointer.
+- Merge vs Rebase:
+  - git merge: Combines divergent branch histories either via a Fast-Forward merge (if no divergence exists) or a Three-Way Merge (creating a new merge commit with two parent commits, preserving exact historical branch topology).
+  - git rebase: Reapplies commits from the current branch onto the tip of another base branch one by one, creating brand new commit hashes and producing a clean, linear commit history.
+  - git reset: Moves branch pointers backwards; --soft preserves changes in staging, --mixed (default) resets staging but keeps working tree, --hard discards all changes in both staging and working directory.
+  - git revert: Safely undoes changes by generating a new commit that records the exact inverse diff, preserving shared commit history for collaboration.

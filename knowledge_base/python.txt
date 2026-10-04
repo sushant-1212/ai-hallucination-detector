@@ -1,11 +1,21 @@
-Python was created by Guido van Rossum and first released in 1991. Development began in the late 1980s at Centrum Wiskunde & Informatica (CWI) in the Netherlands.
+Python was created by Guido van Rossum and first released in 1991. Development began in the late 1980s at Centrum Wiskunde & Informatica (CWI) in the Netherlands. Guido van Rossum named Python after the British comedy series "Monty Python's Flying Circus", not after the snake family Colubridae.
 
-Python is a high-level, interpreted, general-purpose programming language known for emphasizing code readability through significant indentation.
+Python is a high-level, interpreted, general-purpose programming language known for emphasizing code readability through significant indentation instead of curly braces.
 
-Python uses dynamic typing and automatic memory management, including reference counting combined with a cyclic garbage collector.
+Python uses dynamic typing and automatic memory management, including reference counting combined with a cyclic garbage collector to detect and reclaim cyclic reference memory.
 
-Python 2 and Python 3 are two major versions of the language; Python 2 reached its official end-of-life on January 1, 2020, and Python 3 is the actively maintained version.
+Python 2 and Python 3 are two major versions of the language; Python 2 reached its official end-of-life on January 1, 2020, and Python 3 is the actively maintained and developed version.
 
-Popular Python frameworks and libraries include Django and Flask for web development, NumPy and pandas for data analysis, and TensorFlow and PyTorch for machine learning.
+Popular Python frameworks and libraries include Django, Flask, and FastAPI for web development, NumPy and pandas for data analysis, and TensorFlow, PyTorch, and scikit-learn for machine learning and scientific computing.
 
-The Python Software Foundation (PSF) is the organization that manages and maintains Python's development.
+The Python Software Foundation (PSF) is the non-profit organization that manages, protects, and maintains Python's intellectual property and development.
+
+CPython is the reference and default implementation of Python written in C. Alternative implementations include PyPy (which features a Just-In-Time JIT compiler), Jython (which runs on the Java Virtual Machine), and IronPython (which runs on Microsoft .NET).
+
+Python's execution model compiles source code (.py) into intermediate bytecode (.pyc), which is then interpreted by the Python Virtual Machine (PVM).
+
+CPython includes the Global Interpreter Lock (GIL), a mutual exclusion mutex that prevents multiple native OS threads from executing Python bytecodes simultaneously in a single process. As a result, CPU-bound parallelism in CPython is achieved via multiprocessing rather than multithreading, while I/O-bound tasks benefit from multithreading or asynchronous programming with asyncio.
+
+Python standard data structures include lists (dynamic arrays), tuples (immutable sequences), sets (hash-based unique elements), and dictionaries (hash maps offering average O(1) key lookups).
+
+Python supports object-oriented, functional, and procedural programming paradigms, featuring first-class functions, list comprehensions, generator functions yielding values via the yield keyword, and decorators that wrap function execution.

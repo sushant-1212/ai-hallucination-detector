@@ -1,8 +1,27 @@
 Linux is a free and open-source, monolithic, Unix-like operating system kernel.
 
-The Linux kernel was initially developed and announced by Linus Torvalds on August 25, 1991, while a student at the University of Helsinki in Finland. Linus Torvalds released version 0.01 in September 1991. The Linux kernel is released under the GNU General Public License version 2 (GPLv2) and is free open-source software, developed collaboratively by thousands of contributors worldwide. Linux is not a proprietary operating system, nor is it owned or licensed by Apple Inc.
+The Linux kernel was initially developed and announced by Linus Torvalds on August 25, 1991, while a student at the University of Helsinki in Finland. Linus Torvalds released version 0.01 in September 1991. The Linux kernel is licensed under the GNU General Public License version 2 (GPLv2) and is free open-source software, maintained and developed collaboratively by thousands of engineers worldwide alongside the Linux Foundation. Linux is not a proprietary operating system, nor is it owned or licensed exclusively by Apple Inc., Microsoft, or any single corporation.
 
-In operating systems architecture:
-- A process is an executing program instance with its own private virtual address space and isolated system resources.
-- Threads (lightweight processes) created within the same process share the same virtual address space, global variables, file descriptors, and heap memory, but each thread maintains its own private stack and register state.
-- Concurrency and Synchronization: Deadlocks occur in concurrent systems when a set of concurrent processes are blocked because each process is holding a resource and waiting for another resource held by another process. Deadlocks require four simultaneous Coffman conditions: Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait. Deadlocks occur when resources are held and waited for, not when all processes release locks simultaneously. Releasing all locks simultaneously resolves or prevents deadlocks.
+Operating System Architecture and Modes:
+- Dual-Mode Operation: Modern CPUs support User Mode (Ring 3) and Kernel/Supervisor Mode (Ring 0). User applications execute in User Mode with restricted privileges; they transition to Kernel Mode via hardware interrupts, CPU exceptions, or software system calls (syscalls like fork, exec, read, write).
+- Kernel Architecture: Linux uses a monolithic kernel architecture where core OS services (process scheduler, virtual memory management, device drivers, network protocol stacks, and file systems) run in a single shared kernel address space. To provide modularity, Linux supports Loadable Kernel Modules (LKMs), allowing device drivers and file system drivers to be loaded and unloaded dynamically into the kernel without rebooting.
+
+Processes, Threads, and Concurrency:
+- A Process is an executing instance of a program possessing an isolated virtual address space, memory segments (code, data, heap, stack), file descriptor tables, and security credentials. Created via the fork() and execve() system calls.
+- Threads (Lightweight Processes / POSIX pthreads): Multiple execution threads within the same process share the same virtual address space, heap memory, global variables, and open file descriptors, but each thread possesses its own private program counter (PC), register set, and call stack.
+- Scheduling: The Linux CPU scheduler uses the Completely Fair Scheduler (CFS), which allocates CPU time using red-black trees based on the virtual runtime (vruntime) of runnable tasks.
+- Deadlocks and Coffman Conditions: A deadlock is a permanent state where concurrent threads are indefinitely blocked because each thread holds a shared resource and waits for another resource held by another thread. A deadlock requires four simultaneous conditions (the Coffman conditions):
+  1. Mutual Exclusion: At least one resource must be held in a non-shareable mode.
+  2. Hold and Wait: A process holds resources while requesting additional resources.
+  3. No Preemption: Resources cannot be forcibly seized from a process; they must be voluntarily released.
+  4. Circular Wait: A closed chain of processes exists where each process waits for a resource held by the next.
+  Deadlocks occur when locks are held and waited for in circular dependency, never when all processes release all shared locks simultaneously. Simultaneously releasing locks prevents and resolves deadlocks.
+
+Virtual Memory and Paging:
+- Linux maps process virtual memory to physical RAM using Paging managed by the Memory Management Unit (MMU) and Translation Lookaside Buffer (TLB).
+- Address spaces are partitioned into fixed-size pages (typically 4 KB on x86-64).
+- When a process accesses an unmapped or swapped-out virtual page, the CPU hardware raises a Page Fault exception, prompting the kernel to allocate physical memory or page the data in from disk swap space.
+
+Linux namespaces (PID, NET, MNT, IPC, UTS, USER) and Control Groups (cgroups) provide the core isolation mechanisms underpinning modern containerization platforms like Docker and Kubernetes.
+
+Popular Linux distributions include Debian, Ubuntu, Red Hat Enterprise Linux (RHEL), Fedora, CentOS, Arch Linux, and Alpine Linux.

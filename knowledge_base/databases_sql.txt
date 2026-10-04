@@ -1,0 +1,33 @@
+Database Systems, SQL, and Data Storage Architecture.
+
+Relational Database Management Systems (RDBMS):
+- Relational databases store structured data in tables composed of rows (records / tuples) and columns (attributes / fields).
+- Relational model was formulated by Edgar F. Codd at IBM in 1970 based on first-order predicate logic and set theory.
+- Structured Query Language (SQL): Declarative domain-specific language used to query, insert, update, delete, and define relational schema.
+- Popular RDBMS engines: PostgreSQL (advanced open-source object-relational database), MySQL (popular open-source relational database created in 1995, owned by Oracle), SQLite (serverless, zero-configuration, self-contained embedded C database engine), Oracle Database, and Microsoft SQL Server.
+
+Database Indexing and Performance:
+- Primary Indexes and B-Trees / B+ Trees: Most relational databases use B+ Tree indexes for primary keys and indexed columns. A B+ Tree is a self-balancing M-way search tree where all data records or row pointers reside strictly in leaf nodes, linked sequentially for high-speed range scans. Index lookups, insertions, and deletions execute in O(log N) disk I/O operations.
+- Hash Indexes: Provide O(1) exact equality lookups (=, IN), but cannot support range queries (<, >, BETWEEN).
+- Full Table Scans: Occur when an engine reads every block on disk sequentially because no appropriate index covers the query filter predicates, resulting in O(N) I/O.
+- Database Normalization: Systematic approach decomposing tables to eliminate data redundancy and prevent insertion, update, and deletion anomalies. Core normal forms:
+  1. First Normal Form (1NF): Each column contains only atomic (indivisible) values; no repeating groups.
+  2. Second Normal Form (2NF): Meets 1NF, and all non-key attributes are fully functionally dependent on the entire primary key (eliminates partial key dependencies).
+  3. Third Normal Form (3NF): Meets 2NF, and no non-key attribute is transitively dependent on the primary key.
+  4. Boyce-Codd Normal Form (BCNF): Stricter version of 3NF where every determinant is a candidate key.
+
+NoSQL and Non-Relational Storage Models:
+NoSQL databases emerged to handle semi-structured or unstructured high-velocity data, horizontal scalability, and distributed schema flexibility:
+1. Document Stores: Store data in self-describing, schema-flexible JSON/BSON documents (e.g., MongoDB, Couchbase).
+2. Key-Value Stores: High-speed in-memory or persistent associative stores mapping arbitrary string keys to value blobs (e.g., Redis, Amazon DynamoDB, Memcached). Redis is an in-memory data structure store supporting strings, hashes, lists, sets, sorted sets (ZSET), and pub/sub messaging.
+3. Wide-Column Stores / Column-Family: Optimize write throughput and analytical scans by storing data by column families rather than rows (e.g., Apache Cassandra, Google Bigtable, ScyllaDB).
+4. Graph Databases: Model data as nodes, edges (relationships), and properties, using index-free adjacency to traverse complex interconnected networks in constant time per hop (e.g., Neo4j, Amazon Neptune).
+
+Transactions and Concurrency Control:
+- ACID Transactions: Atomicity (all or nothing), Consistency (preserves schema constraints), Isolation (concurrent safety), Durability (persisted to non-volatile disk via Write-Ahead Logging WAL).
+- Isolation Levels and Anomalies (ANSI SQL):
+  1. Read Uncommitted: Permits Dirty Reads (reading uncommitted writes from other transactions).
+  2. Read Committed: Prevents Dirty Reads, but permits Non-Repeatable Reads (subsequent reads see updated values).
+  3. Repeatable Read: Prevents Dirty and Non-Repeatable Reads, but may permit Phantom Reads (concurrent inserts appearing in subsequent range queries). Default in MySQL InnoDB.
+  4. Serializable: Strictest isolation level; transactions execute with identical results to strict serial execution, eliminating all concurrency anomalies through two-phase locking (2PL) or Serializable Snapshot Isolation (SSI).
+- Multi-Version Concurrency Control (MVCC): Modern engines (PostgreSQL, MySQL InnoDB) use MVCC to allow readers to never block writers, and writers to never block readers, by maintaining multiple historical versions of data rows.

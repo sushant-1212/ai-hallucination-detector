@@ -1,9 +1,38 @@
-Garbage collection is an automatic memory management technique used by languages such as Java, Python, C#, and JavaScript, where the runtime periodically identifies and frees memory occupied by objects that are no longer referenced by the program.
+Core Computer Science and Software Engineering Concepts.
 
-Languages such as C and C++ do not have built-in garbage collection by default; memory management in these languages is typically manual, using functions like malloc/free (C) or new/delete (C++), though C++ also supports smart pointers for automated cleanup.
+Memory Management and Garbage Collection:
+- Garbage collection is an automatic memory management technique used by managed runtimes such as Java, Python, C#, Go, and JavaScript, where the runtime engine periodically identifies and frees memory occupied by objects that are no longer referenced or reachable from root references.
+- Systems languages such as C and C++ do not possess built-in garbage collection; memory management is strictly manual, utilizing functions like malloc/free in C or operators like new/delete in C++, or deterministic RAII with smart pointers (std::unique_ptr, std::shared_ptr) in modern C++.
 
-Object-oriented programming (OOP) is a programming paradigm based on the concept of "objects", which bundle data (attributes) and behavior (methods). The four commonly cited pillars of OOP are encapsulation, abstraction, inheritance, and polymorphism.
+Compilers, Interpreters, and Virtual Machines:
+- A Compiler translates source code written in a high-level programming language into target machine code binaries or intermediate bytecode before execution. Compilation phases include lexical analysis (tokenization), syntax analysis (parsing into an Abstract Syntax Tree AST), semantic analysis (type checking), intermediate code generation, machine-independent optimization, and target code generation.
+- An Interpreter executes source code or bytecode directly, translating and evaluating instructions line-by-line or statement-by-statement at runtime without producing standalone machine binaries.
+- A Virtual Machine (VM) in language runtimes, such as the Java Virtual Machine (JVM) or Python Virtual Machine (PVM), is an abstract computing machine that executes bytecode instructions, achieving cross-platform portability across disparate operating systems and CPU architectures.
+- System Virtual Machines (like VMware ESXi, KVM, VirtualBox) virtualize entire hardware platforms using a Hypervisor (Type 1 bare-metal or Type 2 hosted), whereas OS-level virtualization (Containers like Docker) shares the host OS kernel and uses kernel namespaces and cgroups for process isolation.
 
-A compiler translates source code written in a high-level language into machine code or an intermediate form (such as bytecode) before the program runs. An interpreter, by contrast, executes source code more directly, translating and running it line by line or statement by statement at runtime.
+Object-Oriented Programming (OOP) Fundamentals:
+OOP is a paradigm organizing software design around data objects bundling attributes (state) and methods (behavior). The four fundamental pillars are:
+1. Encapsulation: Bundling data and methods into a single unit while restricting direct external access to internal state through public interfaces (data hiding).
+2. Abstraction: Hiding complex internal implementation details and exposing only essential interfaces to callers.
+3. Inheritance: Mechanism where a child class acquires fields and behaviors from a parent class, facilitating code reuse.
+4. Polymorphism: Ability of different classes to respond to the same interface or method invocation differently, through Compile-time (Method Overloading) or Runtime (Method Overriding via dynamic dispatch and vtables).
 
-A Virtual Machine (VM) in the context of programming languages, such as the Java Virtual Machine (JVM) or the Python Virtual Machine (PVM), is a software layer that executes compiled bytecode, allowing the same compiled program to run on different underlying hardware and operating systems.
+Concurrency, Synchronization, and Parallelism:
+- Concurrency is the composition of independently executing processes/threads (dealing with lots of things at once), while Parallelism is the simultaneous execution of multiple computations on multiple physical CPU cores (doing lots of things at once).
+- Race Condition: An undesirable software bug occurring when concurrent threads access shared mutable state without proper synchronization, making the program output dependent on unpredictable thread scheduling timing.
+- Critical Section: A block of code accessing shared resources that must not be concurrently executed by multiple threads.
+- Synchronization Primitives:
+  - Mutex (Mutual Exclusion): A locking mechanism owned by a single thread ensuring exclusive access to a resource.
+  - Semaphore: A signaling mechanism using an integer counter invented by Edsger Dijkstra. A Counting Semaphore controls access to a finite pool of resources, while a Binary Semaphore acts similarly to a mutex.
+  - Spinlock: A lock where threads loop continuously ("spin") checking for lock availability, efficient only when wait times are shorter than the cost of a thread context switch.
+
+Database Systems and Distributed Theory:
+- ACID Transactions in Relational Databases (RDBMS):
+  - Atomicity: Guarantees all operations in a transaction succeed completely or roll back entirely ("all or nothing").
+  - Consistency: Ensures transactions transform the database from one valid state to another satisfying all schema constraints and foreign keys.
+  - Isolation: Determines how concurrent transactions interact, preventing race conditions like Dirty Reads, Non-Repeatable Reads, and Phantom Reads.
+  - Durability: Guarantees committed transaction changes survive system crashes and power failures via Write-Ahead Logging (WAL).
+- CAP Theorem (Brewer's Theorem): A distributed data store can guarantee at most two out of three properties simultaneously:
+  1. Consistency (C): Every read receives the most recent write or an error.
+  2. Availability (A): Every non-failing node returns a non-error response for every request without guarantee of being the newest write.
+  3. Partition Tolerance (P): The system continues functioning despite arbitrary network packet drops or delays between nodes. Since network partitions cannot be prevented in real-world distributed networks, distributed databases must choose between CP (e.g., MongoDB, HBase) and AP (e.g., Apache Cassandra, DynamoDB).

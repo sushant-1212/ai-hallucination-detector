@@ -1,13 +1,26 @@
-Java was created by James Gosling and his team at Sun Microsystems. The project began in 1991 under the codename "Oak" and was publicly released in 1995 under the name Java.
+Java was created by James Gosling and his team (the Green Team, including Mike Sheridan and Patrick Naughton) at Sun Microsystems. The project began in June 1991 under the codename "Oak" (named after an oak tree outside Gosling's office) and was publicly released in 1995 under the name Java.
 
-Java is a general-purpose, class-based, object-oriented programming language designed to have as few implementation dependencies as possible, following the principle "write once, run anywhere" (WORA).
+Java is a general-purpose, class-based, object-oriented programming language designed following the philosophy "write once, run anywhere" (WORA).
 
-Java programs are compiled into bytecode that runs on the Java Virtual Machine (JVM), rather than being compiled directly to native machine code.
+Java source code (.java) is compiled by the javac compiler into platform-independent intermediate bytecode (.class files) rather than compiling directly to standalone x86 or ARM machine code. The bytecode is then loaded, verified, and executed by the Java Virtual Machine (JVM).
 
-Java uses automatic memory management through a garbage collector, which reclaims memory occupied by objects that are no longer reachable by the program, so developers do not need to manually free memory.
+The JVM execution engine uses an interpreter combined with a Just-In-Time (JIT) compiler (HotSpot). HotSpot monitors running code, detects frequently executed "hot spots," and compiles those bytecode sections into native machine instructions at runtime for near-native execution performance.
 
-Sun Microsystems was acquired by Oracle Corporation in 2010, and Oracle has maintained and developed Java since then.
+The Java runtime environment is structured into three tiers:
+1. Java Virtual Machine (JVM): Abstract computing machine that executes bytecode.
+2. Java Runtime Environment (JRE): Includes the JVM, core class libraries, and supporting files required to run Java applications.
+3. Java Development Kit (JDK): Full development environment containing the JRE, javac compiler, jar archiver, javadoc generator, and debugging tools.
 
-Common Java features include: strong static typing, automatic garbage collection, platform independence via the JVM, a large standard library, and support for object-oriented, generic, and (since Java 8) functional programming styles.
+Java utilizes automatic memory management through Garbage Collection (GC). The JVM memory is partitioned into:
+- Heap Memory: Shared across all threads; stores all object instances and arrays. Partitioned into the Young Generation (Eden space, Survivor spaces S0 and S1) and the Old/Tenured Generation.
+- Metaspace: Replaced PermGen in Java 8; stores class metadata in native OS memory.
+- JVM Stack: Thread-private; stores frames containing local variables, partial results, and method invocation data.
+- Garbage Collectors: Modern JVM implementations offer algorithms such as G1GC (Garbage-First GC), ZGC (low-latency scalable GC), and Shenandoah GC.
 
-Java is different from JavaScript. JavaScript was created by Brendan Eich in 1995 at Netscape and is primarily used for web scripting; the two languages share a name for marketing reasons but are otherwise unrelated in design.
+Sun Microsystems was acquired by Oracle Corporation in 2010, and Oracle has overseen Java's development and OpenJDK governance since then.
+
+Java enforces strong static typing and supports the four core Object-Oriented Programming (OOP) pillars: Encapsulation, Inheritance, Polymorphism, and Abstraction. It supports interfaces, abstract classes, generics, lambda expressions, and Streams API (introduced in Java 8), and Virtual Threads (introduced in Java 21 / Project Loom).
+
+Popular enterprise Java frameworks and tools include Spring Boot, Spring Framework, Hibernate (ORM), Apache Maven, Gradle, and Apache Kafka.
+
+Java is completely distinct from JavaScript. JavaScript was created by Brendan Eich in 1995 at Netscape for web browser scripting. The two languages share a name purely for marketing reasons and have completely independent language designs and execution runtimes.

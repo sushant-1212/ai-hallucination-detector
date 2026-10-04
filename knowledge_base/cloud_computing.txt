@@ -1,0 +1,27 @@
+Cloud Computing, Distributed Systems, and DevOps Engineering Fundamentals.
+
+Cloud Service Models:
+1. Infrastructure as a Service (IaaS): Provides raw virtualized computing resources, storage, and networking over the internet. Customers manage OS, middleware, and applications (e.g., AWS EC2, Google Compute Engine, Microsoft Azure Virtual Machines).
+2. Platform as a Service (PaaS): Delivers hardware and software tools over the internet, typically for application development. Customers manage only applications and data, while the cloud provider manages infrastructure, OS, runtimes, and patching (e.g., AWS Elastic Beanstalk, Heroku, Google App Engine).
+3. Software as a Service (SaaS): Delivers fully functional software applications accessible via web browsers over the internet (e.g., Google Workspace, Microsoft 365, Salesforce).
+4. Function as a Service (FaaS) / Serverless Computing: Executes event-driven stateless code snippets (functions) without managing underlying servers; scales automatically to zero when idle, billing strictly per execution duration and invocation count (e.g., AWS Lambda, Google Cloud Functions, Azure Functions).
+
+Cloud Deployment Models:
+- Public Cloud: Services owned and operated by third-party cloud providers, delivered over the public internet (Amazon Web Services AWS, Microsoft Azure, Google Cloud Platform GCP).
+- Private Cloud: Cloud computing infrastructure provisioned for exclusive use by a single enterprise, hosted either on-premises or by a third party.
+- Hybrid Cloud: Combines public and private clouds connected by encrypted VPN or dedicated interconnects (e.g., AWS Direct Connect).
+- Multi-Cloud: Utilizing multiple different public cloud providers simultaneously (e.g., using AWS for computation and GCP for BigQuery analytics) to prevent vendor lock-in and increase redundancy.
+
+Containerization and Virtualization:
+- Virtual Machines (VMs): Virtualize physical hardware via a Hypervisor (Type 1 bare-metal hypervisors like VMware ESXi or KVM, Type 2 hosted hypervisors like VirtualBox). Each VM contains a complete guest operating system, virtual CPU, memory, and disk, consuming significant RAM and boot time.
+- Containers: OS-level virtualization sharing the host OS kernel while providing process isolation using Linux namespaces (PID, NET, IPC, MNT, UTS) and Control Groups (cgroups for CPU, memory, and I/O resource limiting). Containers are lightweight, start in milliseconds, and bundle application code and dependencies into immutable container images.
+- Docker: Open-source platform created by Solomon Hykes in 2013 that standardized container image formats (OCI - Open Container Initiative) using Dockerfiles.
+- Kubernetes (K8s): Open-source container orchestration platform originally developed by Google in 2014 (based on Google's internal Borg system) and donated to the Cloud Native Computing Foundation (CNCF).
+  - Pod: The smallest deployable computing unit in Kubernetes, wrapping one or more tightly-coupled containers sharing network namespace and storage volumes.
+  - Architecture: Control Plane (kube-apiserver, etcd key-value datastore, kube-scheduler, kube-controller-manager) and Worker Nodes (kubelet, kube-proxy, container runtime such as containerd).
+
+Distributed System Fundamentals:
+- Load Balancing: Distributes network traffic across multiple backend servers to prevent overload, maximize throughput, and ensure fault tolerance. Operates at Layer 4 (Transport layer TCP/UDP routing) or Layer 7 (Application layer HTTP/HTTPS routing, handling SSL termination, path-based routing, and cookies).
+- High Availability (HA) and Fault Tolerance: Achieved via replication, health checks, auto-scaling groups, and multi-Availability Zone (AZ) deployments.
+- Horizontal Scaling (Scaling Out): Adding more nodes/machines to a pool (e.g., adding 5 more EC2 instances).
+- Vertical Scaling (Scaling Up): Adding more hardware resources (CPU cores, RAM) to an existing single machine.

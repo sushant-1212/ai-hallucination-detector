@@ -1,0 +1,26 @@
+Cybersecurity, Cryptography, and Network Security Fundamentals.
+
+The CIA Triad:
+The foundational model guiding information security policies:
+1. Confidentiality: Ensuring sensitive data is accessible strictly to authorized individuals and protected against unauthorized disclosure (achieved via encryption, access controls, multi-factor authentication).
+2. Integrity: Safeguarding the accuracy and completeness of data, ensuring information is not altered, tampered with, or forged in transit or at rest (achieved via cryptographic hash functions, digital signatures, message authentication codes MAC).
+3. Availability: Ensuring computing resources, networks, and data are promptly accessible to authorized users when needed (defended via redundant infrastructure, load balancing, DDoS mitigation, and disaster recovery plans).
+
+Cryptography Principles and Primitive Types:
+- Cryptographic Hash Functions: One-way deterministic mathematical algorithms mapping arbitrary-length inputs to fixed-size bit strings (digests). Properties include Pre-image resistance (irreversibility), Second pre-image resistance, and Collision resistance (infeasibility of finding two distinct inputs x and y such that hash(x) = hash(y)). Examples: SHA-256 (Secure Hash Algorithm 256-bit, part of SHA-2 family), SHA-3, bcrypt/Argon2 (slow, salted password hashing). MD5 and SHA-1 are cryptographically broken due to practical collision attacks.
+- Symmetric Encryption: Uses the exact same secret key for both encryption and decryption. Fast and computationally efficient for bulk data transfer. Standard: Advanced Encryption Standard (AES) with 128, 192, or 256-bit keys, commonly operating in Galois/Counter Mode (AES-GCM) for authenticated encryption.
+- Asymmetric (Public-Key) Cryptography: Uses mathematically linked key pairs: a Public Key (distributed openly for encryption or signature verification) and a Private Key (kept secret for decryption or digital signature generation).
+  - RSA: Based on the computational hardness of factoring large prime numbers (invented by Ron Rivest, Adi Shamir, and Leonard Adleman in 1977).
+  - Elliptic Curve Cryptography (ECC): Based on the algebraic structure of elliptic curves over finite fields (e.g., ECDSA, Ed25519, ECDHE). Achieves equivalent security to RSA with significantly smaller key sizes (e.g., a 256-bit ECC key offers comparable security to a 3072-bit RSA key), reducing bandwidth and CPU overhead.
+  - Digital Signatures: Sender signs a message hash with their Private Key; anyone with the sender's Public Key can verify that the message originated from the authentic sender and was not modified in transit.
+
+Common Web Application Security Vulnerabilities (OWASP Top 10):
+1. Injection Attacks (SQL Injection SQLi): Occurs when untrusted user input is concatenated directly into database query strings, allowing attackers to execute arbitrary SQL commands. Mitigated by using Parameterized Queries (Prepared Statements) or ORMs.
+2. Cross-Site Scripting (XSS):
+   - Stored XSS: Malicious JavaScript is permanently stored in a database and rendered to other users.
+   - Reflected XSS: Malicious script in a URL parameter is reflected immediately in the web response.
+   - DOM-based XSS: Vulnerability executed purely client-side in the browser DOM.
+   - Mitigated by context-aware output encoding, Content Security Policy (CSP) HTTP headers, and setting the HttpOnly flag on session cookies to prevent cookie theft via JavaScript.
+3. Cross-Site Request Forgery (CSRF): Tricks an authenticated user's browser into executing unwanted actions on a trusted web application. Mitigated via Anti-CSRF synchronization tokens, SameSite cookie attributes (SameSite=Strict or SameSite=Lax), and re-authentication for sensitive actions.
+4. Broken Authentication and Session Hijacking: Prevented using secure password hashing (Argon2, bcrypt), Multi-Factor Authentication (MFA / TOTP), short session timeouts, and transmitting cookies strictly over HTTPS with Secure and HttpOnly flags.
+5. Man-in-the-Middle (MitM) Attacks: Intercepting network communication between two parties; mitigated by end-to-end TLS encryption and HTTP Strict Transport Security (HSTS).

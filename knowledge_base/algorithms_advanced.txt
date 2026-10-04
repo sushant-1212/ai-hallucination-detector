@@ -1,13 +1,29 @@
-Algorithms and data structure performance characteristics are analyzed using asymptotic Big-O notation.
+Algorithms and data structure performance characteristics are analyzed using asymptotic notation: Big-O (upper bound), Big-Omega (lower bound), and Big-Theta (tight bound).
 
 Time and Space Complexity Fundamentals:
-- Constant Time O(1): An algorithm whose execution time remains strictly constant regardless of input size N. Examples include accessing an array element by index or looking up a key in a hash table with no collisions.
-- Logarithmic Time O(log N): Typical of divide-and-conquer algorithms. Binary search on a sorted array achieves O(log N) worst-case time complexity, dividing the search interval in half with each comparison. Binary search does not have O(N^2) complexity.
+- Constant Time O(1): Execution time remains strictly constant regardless of input size N. Examples include accessing an array element by index, push/pop on a stack, or looking up a key in a hash table with no collisions.
+- Logarithmic Time O(log N): Typical of divide-and-conquer searching algorithms. Binary search on a sorted array of size N achieves O(log N) worst-case time complexity, halving the search space in each iteration. Binary search does not have O(N^2) complexity.
+- Linear Time O(N): Execution time scales linearly with input size (e.g., linear scan of an unsorted array, counting elements).
+- Linearithmic Time O(N log N): Typical of optimal comparison-based sorting algorithms.
+- Quadratic Time O(N^2): Typical of naive nested loops, bubble sort, selection sort, or insertion sort.
+- Exponential Time O(2^N) and Factorial Time O(N!): Intractable for large inputs; typical of combinatorial brute-force searches (Traveling Salesperson Problem, boolean satisfiability).
 
 Sorting Algorithms:
-- MergeSort: A divide-and-conquer sorting algorithm that divides the array into halves, recursively sorts them, and merges the sorted halves. MergeSort has a guaranteed worst-case, average-case, and best-case time complexity of O(N log N).
-- QuickSort: A partitioning sorting algorithm. QuickSort has an average-case time complexity of O(N log N). However, if an unbalanced pivot is chosen repeatedly (such as on an already sorted array without random pivoting), QuickSort degrades to a worst-case time complexity of O(N^2). QuickSort does not have a guaranteed O(N) complexity across all cases.
+- MergeSort: A stable divide-and-conquer sorting algorithm that splits the array into two halves, recursively sorts them, and merges the sorted subarrays using an auxiliary buffer. MergeSort possesses a guaranteed worst-case, average-case, and best-case time complexity of O(N log N). Its auxiliary space complexity is O(N).
+- QuickSort: An in-place partitioning sorting algorithm that selects a pivot element and partitions the array into elements smaller than and larger than the pivot. QuickSort has an average-case time complexity of O(N log N) and space complexity of O(log N) due to recursive stack frames. However, if an unbalanced pivot is chosen repeatedly (e.g., picking the first element on an already-sorted array without randomization), QuickSort degrades to a worst-case time complexity of O(N^2). QuickSort does not have a guaranteed O(N) complexity across all cases.
+- HeapSort: Comparison-based sorting algorithm using a binary max-heap. Guarantees O(N log N) time complexity in all cases (worst, average, best) and operates in-place with O(1) auxiliary space.
+- Non-comparison Sorts: Counting Sort runs in O(N + K) time, and Radix Sort runs in O(d * (N + K)) time, beating the theoretical O(N log N) lower bound for comparison sorts by exploiting digit or integer value constraints.
 
 Data Structures:
-- Hash Tables: Implement an associative array abstract data type using a hash function to compute an index into an array of buckets. Under uniform hashing, hash tables provide average-case O(1) time complexity for insertion, lookup, and deletion.
-- Binary Search Tree (BST): A node-based binary tree data structure. When balanced, search operations run in O(log N) time. However, when degenerate or completely unbalanced (e.g. elements inserted in sorted order forming a linked-list structure), BST search degrades to worst-case O(N) linear time complexity. A basic BST cannot guarantee O(1) lookup.
+- Hash Tables: Implement an associative array abstract data type using a hash function to map keys to bucket indices. Under uniform hashing and reasonable load factors (alpha < 0.75), hash tables provide average-case O(1) time complexity for insertion, lookup, and deletion. Collision resolution methods include Separate Chaining (linked lists or balanced trees per bucket) and Open Addressing (Linear Probing, Quadratic Probing, Double Hashing). In the pathological worst case where all keys hash to the same bucket, lookup degrades to O(N).
+- Binary Search Tree (BST): Node-based data structure where the left subtree contains keys smaller than the node, and the right subtree contains keys larger. In a balanced BST, search, insertion, and deletion execute in O(log N) time. However, when degenerate or completely unbalanced (e.g., inserting sequentially sorted keys forming a skewed single-chain tree), search degrades to worst-case linear O(N) time complexity. A standard BST cannot guarantee O(1) lookup.
+- Self-Balancing Trees:
+  - AVL Tree: Strictly height-balanced BST where height difference between left and right subtrees (balance factor) cannot exceed 1; guarantees strict O(log N) search.
+  - Red-Black Tree: Self-balancing BST using color bits (Red and Black) and tree rotations; guarantees O(log N) operations with fewer rotations on insertions/deletions than AVL trees. Used in C++ std::map, Java TreeMap, and Linux CFS process scheduling.
+
+Graph Algorithms:
+- Breadth-First Search (BFS): Traverses graphs layer by layer using a queue. Time complexity is O(V + E); finds shortest paths in unweighted graphs.
+- Depth-First Search (DFS): Explores graph paths deeply using recursion or a stack. Time complexity is O(V + E); used for topological sorting, cycle detection, and strongly connected components (Tarjan's or Kosaraju's algorithms).
+- Dijkstra's Algorithm: Computes single-source shortest paths on weighted graphs with non-negative edge weights using a min-heap priority queue; time complexity is O((V + E) log V).
+- Bellman-Ford Algorithm: Computes single-source shortest paths and detects negative-weight cycles; time complexity is O(V * E).
+- Minimum Spanning Tree (MST): Kruskal's algorithm uses Disjoint Set Union (DSU / Union-Find) with path compression and union by rank in O(E log E) time; Prim's algorithm grows a tree using a priority queue in O((V + E) log V) time.

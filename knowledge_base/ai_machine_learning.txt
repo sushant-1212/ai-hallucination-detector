@@ -1,0 +1,41 @@
+Artificial Intelligence, Machine Learning, Deep Learning, and NLP Fundamentals.
+
+Core Machine Learning Paradigms:
+1. Supervised Learning: Models learn mapping functions from labeled training datasets containing features (X) and ground-truth targets (y).
+   - Classification: Predicting discrete categorical class labels (e.g., Logistic Regression, Support Vector Machines SVM, Random Forests, XGBoost). Metrics: Accuracy, Precision, Recall, F1-Score, ROC-AUC, Confusion Matrix.
+   - Regression: Predicting continuous numerical values (e.g., Linear Regression, Ridge/Lasso regularization, Polynomial Regression). Metrics: Mean Squared Error (MSE), Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), R-squared (R2).
+2. Unsupervised Learning: Discovering inherent patterns, clusters, or representations in unlabeled data.
+   - Clustering: Grouping data points by geometric proximity or density (e.g., K-Means, Hierarchical Clustering, DBSCAN).
+   - Dimensionality Reduction: Compressing high-dimensional feature spaces while preserving variance (e.g., Principal Component Analysis PCA, t-SNE, UMAP).
+3. Reinforcement Learning (RL): An agent learns optimal policy actions through trial-and-error interactions with an environment, maximizing cumulative scalar reward signals via Markov Decision Processes (MDP). Algorithms: Q-Learning, Deep Q-Networks (DQN), Proximal Policy Optimization (PPO). Used extensively in Reinforcement Learning from Human Feedback (RLHF) to align Large Language Models.
+
+Overfitting, Underfitting, and Generalization:
+- Bias-Variance Tradeoff:
+  - High Bias (Underfitting): Model is overly simplistic and fails to capture underlying patterns in training data; exhibits high training error and high test error.
+  - High Variance (Overfitting): Model memorizes training noise and fails to generalize to unseen test data; exhibits very low training error but high test error.
+- Regularization Techniques: L1 Regularization (Lasso, promotes sparse feature weights by adding absolute magnitude penalty), L2 Regularization (Ridge / Weight Decay, prevents large weights by adding squared magnitude penalty), Dropout (randomly deactivating neurons during training in neural networks), Early Stopping, and Cross-Validation (K-Fold CV).
+
+Deep Learning and Neural Network Architectures:
+- Artificial Neural Networks (ANN): Multilayer Perceptrons (MLP) consisting of input, hidden, and output layers with non-linear activation functions (ReLU, Sigmoid, Tanh, GELU, Leaky ReLU).
+- Training Mechanism: Forward propagation computes predictions; Loss functions (Cross-Entropy Loss for classification, Mean Squared Error for regression) quantify error; Backpropagation computes gradients using the calculus chain rule; Optimizers (Stochastic Gradient Descent SGD, Adam, AdamW, RMSprop) iteratively update model weights.
+- Convolutional Neural Networks (CNN): Specialized for grid-structured image data using convolutional filters, weight sharing, and pooling layers (e.g., ResNet, VGG, EfficientNet).
+- Recurrent Neural Networks (RNN) and LSTM/GRU: Sequential models processing time-series or text, maintaining hidden states across time steps. LSTMs mitigate vanishing and exploding gradient problems using Input, Forget, and Output gates.
+
+The Transformer Architecture and Large Language Models (LLMs):
+- Introduced by Vaswani et al. in the seminal 2017 Google research paper "Attention Is All You Need".
+- Self-Attention Mechanism: Computes dynamic contextual representations by comparing Query (Q), Key (K), and Value (V) vector projections:
+  Attention(Q, K, V) = softmax((Q * K^T) / sqrt(d_k)) * V
+- Multi-Head Attention: Allows models to simultaneously attend to information from different representation subspaces at different positions.
+- Positional Encoding: Injects sequence order information into token embeddings since attention operations are permutation-invariant.
+- Types of Transformers:
+  - Encoder-only: Bidirectional contextual representation models; optimal for classification and NER (e.g., BERT, RoBERTa).
+  - Decoder-only: Autoregressive causal language models predicting the next token; optimal for text generation (e.g., GPT-3, GPT-4, Llama, Gemini, Mistral).
+  - Encoder-Decoder: Sequence-to-sequence models (e.g., T5, BART).
+
+AI Hallucination in Generative Models:
+- Definition: Generation of fluent, grammatically correct text that is factually false, ungrounded, or contradicts real-world facts or provided source context.
+- Causes: Training on noisy web data, exposure bias, absence of grounding, stochastic sampling randomness (temperature > 0), and parametric memory limits.
+- Mitigation Strategies:
+  1. Retrieval-Augmented Generation (RAG): Grounding responses in retrieved external documents using vector similarity search (dense embeddings + sparse TF-IDF/BM25).
+  2. Factuality Verification / Hallucination Detection: Decomposing generated answers into atomic propositions and verifying each proposition via Natural Language Inference (NLI) classification (Supported, Contradicted, Insufficient Evidence).
+  3. Chain-of-Thought (CoT) and Self-Consistency prompting.

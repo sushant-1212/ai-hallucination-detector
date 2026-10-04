@@ -1,7 +1,25 @@
-JavaScript is a high-level, interpreted or Just-In-Time (JIT) compiled programming language conforming to the ECMAScript specification.
+JavaScript is a high-level, dynamically typed, multi-paradigm programming language that conforms to the ECMAScript specification.
 
-JavaScript was created in 1995 by Brendan Eich while working at Netscape Communications Corporation. It was famously created in approximately 10 days under the code name Mocha, then renamed LiveScript, and finally named JavaScript.
+JavaScript was created in May 1995 by Brendan Eich while working at Netscape Communications Corporation. It was developed in approximately 10 days under the initial code name Mocha, then renamed LiveScript, and finally named JavaScript.
 
-JavaScript was developed for the Netscape Navigator web browser. It is not a derivative of the Java programming language or the Java runtime environment. The naming was a marketing arrangement between Netscape and Sun Microsystems. JavaScript and Java are completely distinct languages with different type systems, object models, and execution runtimes.
+JavaScript was designed for client-side scripting in the Netscape Navigator web browser. It is not a derivative of the Java programming language or the Java runtime environment. The naming was a marketing strategy between Netscape and Sun Microsystems. JavaScript and Java are completely distinct languages with different type systems, syntax rules, object models, and execution runtimes.
 
-JavaScript is dynamically typed, supports multi-paradigm programming (event-driven, functional, and imperative), and uses prototype-based inheritance rather than classical class-based inheritance. Modern JavaScript engines such as Google's V8 (used in Chrome and Node.js) compile JavaScript source code directly to native machine code.
+JavaScript is single-threaded and relies on an event-driven, non-blocking asynchronous I/O concurrency model powered by an Event Loop:
+- Call Stack: Tracks currently executing function frames (LIFO order).
+- Web APIs / Node APIs: Handle background operations like timers (setTimeout), network requests (fetch, XMLHttpRequest), and file system I/O.
+- Microtask Queue: Processes Promise resolutions (.then/catch/finally), queueMicrotask, and async/await continuations before the next render or macro task.
+- Macrotask Queue (Callback Queue): Processes events from setTimeout, setInterval, setImmediate, and DOM events.
+- Event Loop: Continuously checks if the call stack is empty; if empty, it exhausts the microtask queue first, then dequeues the oldest macrotask.
+
+JavaScript uses prototype-based inheritance rather than classical class-based inheritance. Every object possesses an internal link to another object called its prototype (accessible via Object.getPrototypeOf() or __proto__). When accessing a property on an object, the engine searches the object itself, then traverses up the prototype chain until the property is found or null is reached. ES6 class syntax is syntactic sugar over prototype chains.
+
+Variables in JavaScript:
+- var: Function-scoped or globally-scoped, hoisted and initialized to undefined.
+- let and const: Introduced in ECMAScript 2015 (ES6); block-scoped, hoisted but kept in a Temporal Dead Zone (TDZ) until evaluation, preventing access before declaration.
+
+JavaScript runtimes and engines:
+- Google V8: C++ open-source high-performance engine that compiles JavaScript directly into native machine code (using Ignition bytecode interpreter and TurboFan optimizing compiler). V8 powers Google Chrome, Chromium, and Node.js.
+- Node.js: Created by Ryan Dahl in 2009, combining the V8 engine with the libuv asynchronous I/O library to enable server-side JavaScript execution.
+- Alternative runtimes include Deno and Bun, and alternative engines include SpiderMonkey (Mozilla Firefox) and JavaScriptCore / Nitro (Apple Safari).
+
+Popular modern JavaScript and TypeScript frameworks include React, Next.js, Vue.js, Angular, Svelte, and Express.js.

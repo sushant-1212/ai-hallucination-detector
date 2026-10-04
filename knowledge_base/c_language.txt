@@ -1,7 +1,24 @@
 The C programming language was created by Dennis Ritchie at Bell Labs between 1969 and 1973. It was developed alongside the early versions of the Unix operating system.
 
-Dennis Ritchie also co-created the Unix operating system with Ken Thompson. C became one of the most widely used programming languages in the world and heavily influenced later languages including C++, Java, C#, and JavaScript.
+Dennis Ritchie also co-created the Unix operating system with Ken Thompson. C became one of the most widely used systems programming languages in the world and heavily influenced subsequent languages including C++, Java, C#, and JavaScript.
 
-C is a procedural, statically-typed, compiled language that gives programmers low-level access to memory through pointers. It does not have automatic garbage collection; memory must be manually allocated and freed using functions like malloc() and free().
+C is a procedural, statically-typed, compiled language that gives programmers direct, low-level access to system memory through raw pointers. It is an imperative, compiled language that compiles directly to native machine code binaries.
 
-C++ was created by Bjarne Stroustrup starting in 1979 as an extension of the C language, originally called "C with Classes," and was renamed C++ in 1983. It added object-oriented features such as classes and inheritance to C.
+C does not have automatic garbage collection, dynamic runtime reflection, or compile-time memory leak prevention; memory must be manually managed. Developers explicitly allocate heap memory using functions like malloc(), calloc(), and realloc(), and must explicitly deallocate it using free(). Failing to call free() causes memory leaks, while calling free() twice causes a double-free vulnerability.
+
+The C compilation pipeline consists of four distinct stages:
+1. Preprocessing: Handled by cpp, expands #include directives, #define macros, and conditional compilation flags.
+2. Compilation: Translates preprocessed C code into assembly instructions specific to the target CPU architecture.
+3. Assembly: Translates assembly instructions into relocatable machine-code object files (.o or .obj).
+4. Linking: Handled by ld, resolves external references, connects libraries, and produces an executable binary or shared library.
+
+A C program's virtual address space is segmented into:
+- Text/Code segment: Contains the executable machine instructions; read-only.
+- Data segment: Stores initialized global and static variables.
+- BSS segment (Block Started by Symbol): Stores uninitialized global and static variables, zero-initialized at program startup.
+- Call Stack: Automatically managed by the CPU; stores local variables and activation records (stack frames) for function calls, popped when the function returns. Dynamic heap allocation does not occur on the stack.
+- Heap: Region used for dynamic runtime memory allocation via malloc() and free(), growing upward towards the stack.
+
+Common memory bugs in C include segmentation faults (accessing invalid or unmapped memory), dangling pointers (accessing memory that has already been freed), null-pointer dereferences, and buffer overflows (writing beyond an allocated array boundary).
+
+C++ was created by Bjarne Stroustrup starting in 1979 as an extension of C, originally called "C with Classes," and officially renamed C++ in 1983. C++ introduced classes, constructors/destructors, RAII (Resource Acquisition Is Initialization), templates, and operator overloading.
